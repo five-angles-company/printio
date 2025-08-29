@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::table('printer_settings', function (Blueprint $table) {
+        Schema::create('printer_settings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('printer_id')->constrained('printers')->cascadeOnDelete();
             $table->json('settings');
