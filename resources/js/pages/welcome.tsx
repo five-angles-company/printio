@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import MainLayout from '@/layouts/main-layout';
 
 export default function Welcome() {
     return (
@@ -9,3 +10,5 @@ export default function Welcome() {
         </>
     );
 }
+
+Welcome.layout = (page: React.ReactNode) => <MainLayout children={page} />;
