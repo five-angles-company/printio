@@ -54,7 +54,7 @@ export interface Printer {
     description?: string;
     type: PrinterType;
     status: PrinterStatus;
-    printerSettings?: PrinterSettings;
+    printer_settings?: PrinterSettings;
     created_at: string | Date;
     updated_at: string | Date;
 }

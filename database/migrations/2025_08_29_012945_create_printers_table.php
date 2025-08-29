@@ -27,6 +27,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('printer_id')->constrained('printers')->cascadeOnDelete();
             $table->json('settings');
+            $table->timestamps();
         });
     }
 

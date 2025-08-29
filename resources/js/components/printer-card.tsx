@@ -2,6 +2,7 @@ import { printerIcon, printerStatusColor, printerStatusIcon } from '@/lib/utils'
 import { Printer } from '@/types';
 import { router } from '@inertiajs/react';
 import { PrinterCheck, XCircle } from 'lucide-react';
+import PrinterSettings from './printer-settings';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 
@@ -39,7 +40,7 @@ function PrinterCard({ printer }: PrinterCardProps) {
                         <PrinterCheck className="mr-1 h-3 w-3" />
                         Test
                     </Button>
-                    {/* <PrinterSettings printer={printer} /> */}
+                    <PrinterSettings printer={printer} />
                 </div>
             </CardContent>
 

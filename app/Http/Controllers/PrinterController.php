@@ -15,8 +15,7 @@ class PrinterController extends Controller
     public function index()
     {
         $systemPrinters = System::printers();
-        $printers = Printer::all();
-
+        $printers = Printer::with("printerSettings")->get();
         return inertia('printers', [
             'printers' => $printers,
             'systemPrinters' => $systemPrinters
@@ -40,6 +39,7 @@ class PrinterController extends Controller
             $updatePrinter->handle($printer, $request->validated());
             return to_route('printers.index')->with('success', "$printer->name updated successfully");
         } catch (\Throwable $th) {
+            dd($th);
             return to_route('printers.index')->with('error', $th->getMessage());
         }
     }
