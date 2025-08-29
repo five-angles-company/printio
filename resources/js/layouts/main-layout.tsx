@@ -15,7 +15,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                         href="/"
                         className={cn(
                             `flex items-center justify-center space-x-2 rounded-md px-3 py-2 text-sm font-medium transition`,
-                            url === '/' && 'bg-accent text-primary',
+                            url === '/' && 'bg-primary/5 text-primary',
                         )}
                     >
                         <Activity className="h-4 w-4" />
@@ -25,7 +25,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                         href="/printers"
                         className={cn(
                             `flex items-center justify-center space-x-2 rounded-md px-3 py-2 text-sm font-medium transition`,
-                            url.startsWith('/printers') && 'bg-accent text-primary',
+                            url.startsWith('/printers') && 'bg-primary/5 text-primary',
                         )}
                     >
                         <Printer className="h-4 w-4" />
@@ -35,7 +35,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                         href="/settings"
                         className={cn(
                             `flex items-center justify-center space-x-2 rounded-md px-3 py-2 text-sm font-medium transition`,
-                            url.startsWith('/settings') && 'bg-accent text-primary',
+                            url.startsWith('/settings') && 'bg-primary/5 text-primary',
                         )}
                     >
                         <Settings className="h-4 w-4" />

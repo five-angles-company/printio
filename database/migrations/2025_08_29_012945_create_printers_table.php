@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('printers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('display_name')->nullable();
             $table->string('description')->nullable();
             $table->enum('status', array_column(PrinterStatus::cases(), 'value'))->default(PrinterStatus::READY->value);
             $table->enum('type', array_column(PrinterType::cases(), 'value'));

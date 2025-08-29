@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\PrinterStatus;
+use App\Enums\PrinterType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,14 +13,15 @@ class Printer extends Model
 
     protected $fillable = [
         'name',
+        'display_name',
         'description',
         'type',
         'status',
     ];
 
     protected $casts = [
-        'status' => 'enum:App\Enums\PrinterStatus',
-        'type' => 'enum:App\Enums\PrinterType',
+        'status' => PrinterStatus::class,
+        'type'   => PrinterType::class,
     ];
 
     public function printerSettings()
