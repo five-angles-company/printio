@@ -13,6 +13,6 @@ class PrintJobObserver
      */
     public function created(PrintJob $printJob): void
     {
-        ProcessPrintJob::dispatch($printJob);
+        ProcessPrintJob::dispatchSync($printJob);
     }
 }

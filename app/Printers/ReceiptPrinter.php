@@ -2,6 +2,7 @@
 
 namespace App\Printers;
 
+use App\Data\ReceiptData;
 use App\Encoders\EscPosEncoder;
 use App\Models\Printer;
 use App\Models\PrintJob;
@@ -18,7 +19,7 @@ class ReceiptPrinter extends BasePrinter
      * @param array $data
      * @return string
      */
-    public function renderReceipt($data): string
+    public function renderReceipt(ReceiptData $data): string
     {
         $html = view('receipts.main', $data)->render();
 
@@ -46,8 +47,10 @@ class ReceiptPrinter extends BasePrinter
      */
     public function print(PrintJob $printJob)
     {
+        /** @var ReceiptData $data */
+        $data = $printJob->data;
         $printer = $printJob->printer;
-        $buffer = $this->renderReceipt($printJob->data);
+        $buffer = $this->renderReceipt($data);
         return $this->printRaw($printer->name, $buffer, $printJob->name, true);
     }
 }

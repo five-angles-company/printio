@@ -1,64 +1,72 @@
 <?php
 
-// Zebra Programming Language (ZPL II)
-class ZPLEncoder extends BaseLabelEncoder
+namespace App\Encoders;
+
+use App\Enums\PrintAlign;
+use App\Enums\PrintDensity;
+use App\Enums\PrintSpeed;
+use App\Enums\PrintSize;
+
+class ZplEncoder extends BaseLabelEncoder
 {
-    public function initialize(): self
+    private $densityMap = [
+        'light' => -15,
+        'medium_light' => -8,
+        'medium' => 0,
+        'medium_dark' => 8,
+        'dark' => 15
+    ];
+
+    private $speedMap = [
+        'slow' => 'A',
+        'normal' => 'C',
+        'fast' => 'E'
+    ];
+
+    private $sizeMap = [
+        'small' => [20, 20],
+        'medium' => [30, 30],
+        'large' => [50, 50]
+    ];
+
+    public function initialize(PrintDensity $density = PrintDensity::MEDIUM, PrintSpeed $speed = PrintSpeed::NORMAL): void
     {
-        $this->commands[] = '^XA';
-        $this->commands[] = '^LH0,0';
-        $this->commands[] = '^LL' . $this->labelHeight;
-        $this->commands[] = '^PW' . $this->labelWidth;
-        $this->commands[] = '^MD' . $this->mapDensity($this->density);
-        $this->commands[] = '^PR' . $this->mapSpeed($this->speed);
-        return $this;
+        $this->buffer = "^XA\n";
+        $this->buffer .= "^MD" . $this->densityMap[$density->value] . "\n";
+        $this->buffer .= "^PR" . $this->speedMap[$speed->value] . "\n";
     }
 
-    public function finalize(): self
+    public function addText(int $y, string $text, PrintSize $size = PrintSize::MEDIUM, PrintAlign $alignment = PrintAlign::LEFT): void
     {
-        $this->commands[] = '^PQ' . $this->copies;
-        $this->commands[] = '^XZ';
-        return $this;
+        $fontSize = $this->sizeMap[$size->value];
+        $textWidth = strlen($text) * ($fontSize[1] * 0.6);
+
+        $x = 0;
+        if ($alignment == PrintAlign::CENTER) {
+            $x = ($this->labelWidth - $textWidth) / 2;
+        } elseif ($alignment == PrintAlign::RIGHT) {
+            $x = $this->labelWidth - $textWidth;
+        }
+
+        $this->buffer .= "^FO{$x},{$y}\n";
+        $this->buffer .= "^A0N,{$fontSize[0]},{$fontSize[1]}\n";
+        $this->buffer .= "^FD" . $text . "^FS\n";
     }
 
-    protected function mapSpeed(string $speed): string|int
+    public function addBarcode(int $y, string $data, int $height = 50): void
     {
-        return match ($speed) {
-            'slow' => '2',
-            'normal' => '4',
-            'fast' => '6'
-        };
+        $barcodeWidth = strlen($data) * 11;
+        $x = ($this->labelWidth - $barcodeWidth) / 2;
+
+        $this->buffer .= "^FO{$x},{$y}\n";
+        $this->buffer .= "^BY2\n";
+        $this->buffer .= "^BCN,{$height},Y,N,N\n";
+        $this->buffer .= "^FD" . $data . "^FS\n";
     }
 
-    protected function mapDensity(string $density): string|int
+    public function print(int $copies = 1): void
     {
-        return match ($density) {
-            'light' => '0',
-            'medium_light' => '5',
-            'medium' => '10',
-            'dark' => '15'
-        };
-    }
-
-    public function addText(string $text, int $y, int $size = 30, string $align = 'left'): self
-    {
-        $x = match ($align) {
-            'center' => $this->centerX(strlen($text) * $size / 2),
-            'right' => $this->rightX(strlen($text) * $size / 2),
-            default => 0
-        };
-        $this->commands[] = "^FO{$x},{$y}^A0N,{$size},{$size}^FD{$text}^FS";
-        return $this;
-    }
-
-    public function addBarcode(string $data, int $y, int $height = 100, string $align = 'left'): self
-    {
-        $x = match ($align) {
-            'center' => $this->centerX(strlen($data) * 10),
-            'right' => $this->rightX(strlen($data) * 10),
-            default => 0
-        };
-        $this->commands[] = "^FO{$x},{$y}^BY2,3,{$height}^B3N,N,Y,N^FD{$data}^FS";
-        return $this;
+        $this->buffer .= "^PQ{$copies}\n";
+        $this->buffer .= "^XZ\n";
     }
 }

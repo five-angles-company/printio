@@ -2,8 +2,10 @@
 
 namespace App\Jobs;
 
+use App\Enums\PrinterType;
 use App\Enums\PrintJobStatus;
 use App\Models\PrintJob;
+use App\Printers\LabelPrinter;
 use App\Printers\ReceiptPrinter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -33,11 +35,11 @@ class ProcessPrintJob implements ShouldQueue
         $printerModel = $this->printJob->printer;
 
         // choose printer implementation based on type
-        $printer = match ($printerModel->type->value) {
-            'Receipt' => app(ReceiptPrinter::class),
+        $printer = match ($printerModel->type) {
+            PrinterType::RECEIPT => app(ReceiptPrinter::class),
+            PrinterType::LABEL => app(LabelPrinter::class),
             default   => throw new \RuntimeException("Unsupported printer type: {$printerModel->type}"),
         };
-
         $printer->print($this->printJob);
 
         $this->printJob->update([
@@ -47,6 +49,7 @@ class ProcessPrintJob implements ShouldQueue
 
     public function failed(\Throwable $exception): void
     {
+        dd($exception);
         $this->printJob->update([
             'status' => PrintJobStatus::FAILED,
         ]);

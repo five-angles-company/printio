@@ -7,20 +7,20 @@ use App\Enums\PrintDensity;
 use App\Enums\PrintSpeed;
 use App\Enums\PrintSize;
 
-class EplEncoder extends BaseLabelEncoder
+class DplEncoder extends BaseLabelEncoder
 {
     private $densityMap = [
-        'light' => '1',
-        'medium_light' => '2',
-        'medium' => '3',
-        'medium_dark' => '4',
-        'dark' => '5'
+        'light' => 'L',
+        'medium_light' => 'ML',
+        'medium' => 'M',
+        'medium_dark' => 'MD',
+        'dark' => 'D'
     ];
 
     private $speedMap = [
-        'slow' => '1',
-        'normal' => '3',
-        'fast' => '5'
+        'slow' => 'A',
+        'normal' => 'B',
+        'fast' => 'C'
     ];
 
     private $sizeMap = [
@@ -31,15 +31,14 @@ class EplEncoder extends BaseLabelEncoder
 
     public function initialize(PrintDensity $density = PrintDensity::MEDIUM, PrintSpeed $speed = PrintSpeed::NORMAL): void
     {
-        $this->buffer = "N\n"; // Clear buffer
-        $this->buffer .= "D" . $this->densityMap[$density->value] . "\n"; // Density
-        $this->buffer .= "S" . $this->speedMap[$speed->value] . "\n"; // Speed
+        $this->buffer = "H" . $this->densityMap[$density->value] . "\n";
+        $this->buffer .= "S" . $this->speedMap[$speed->value] . "\n";
     }
 
     public function addText(int $y, string $text, PrintSize $size = PrintSize::MEDIUM, PrintAlign $alignment = PrintAlign::LEFT): void
     {
         $fontSize = $this->sizeMap[$size->value];
-        $charWidths = ['1' => 8, '2' => 10, '3' => 12];
+        $charWidths = ['1' => 20, '2' => 30, '3' => 50];
         $textWidth = strlen($text) * $charWidths[$fontSize];
 
         $x = 0;
@@ -49,8 +48,7 @@ class EplEncoder extends BaseLabelEncoder
             $x = $this->labelWidth - $textWidth;
         }
 
-        // EPL Text format: A x,y,rotation,font,h_multiplier,v_multiplier,normal/reverse,data
-        $this->buffer .= "A{$x},{$y},0,{$fontSize},1,1,N,\"{$text}\"\n";
+        $this->buffer .= "{$x},{$y},{$fontSize},1,1,N,\"{$text}\"\n";
     }
 
     public function addBarcode(int $y, string $data, int $height = 50): void
@@ -58,12 +56,11 @@ class EplEncoder extends BaseLabelEncoder
         $barcodeWidth = strlen($data) * 11;
         $x = ($this->labelWidth - $barcodeWidth) / 2;
 
-        // EPL Code 128 format: B x,y,rotation,type,narrow,wide,height,human_readable,data
         $this->buffer .= "B{$x},{$y},0,1,2,2,{$height},B,\"{$data}\"\n";
     }
 
     public function print(int $copies = 1): void
     {
-        $this->buffer .= "P{$copies}\n"; // Print copies
+        $this->buffer .= "Q{$copies}\nE\n";
     }
 }

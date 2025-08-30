@@ -1,63 +1,72 @@
 <?php
 
-// TSC TSPL (TSC Printer Language)
-class TSPLEncoder extends BaseLabelEncoder
+namespace App\Encoders;
+
+use App\Enums\PrintAlign;
+use App\Enums\PrintDensity;
+use App\Enums\PrintSpeed;
+use App\Enums\PrintSize;
+
+class TsplEncoder extends BaseLabelEncoder
 {
-    public function initialize(): self
+    private $densityMap = [
+        'light' => '6',
+        'medium_light' => '8',
+        'medium' => '10',
+        'medium_dark' => '12',
+        'dark' => '15'
+    ];
+
+    private $speedMap = [
+        'slow' => '2',
+        'normal' => '4',
+        'fast' => '6'
+    ];
+
+    private $sizeMap = [
+        'small' => [1, 1],
+        'medium' => [2, 2],
+        'large' => [3, 3]
+    ];
+
+    public function initialize(PrintDensity $density = PrintDensity::MEDIUM, PrintSpeed $speed = PrintSpeed::NORMAL): void
     {
-        $this->commands[] = 'SIZE ' . ($this->labelWidth / $this->dpi) . ' mm, ' . ($this->labelHeight / $this->dpi) . ' mm';
-        $this->commands[] = 'DIRECTION 1';
-        $this->commands[] = 'REFERENCE 0,0';
-        $this->commands[] = 'SPEED ' . $this->mapSpeed($this->speed);
-        $this->commands[] = 'DENSITY ' . $this->mapDensity($this->density);
-        $this->commands[] = 'CLS';
-        return $this;
+        $widthInches = $this->labelWidth / 203;
+        $heightInches = $this->labelHeight / 203;
+
+        $this->buffer = "SIZE {$widthInches},{$heightInches}\n";
+        $this->buffer .= "GAP 0.1,0\n";
+        $this->buffer .= "DENSITY " . $this->densityMap[$density->value] . "\n";
+        $this->buffer .= "SPEED " . $this->speedMap[$speed->value] . "\n";
+        $this->buffer .= "DIRECTION 1\n";
+        $this->buffer .= "CLS\n";
     }
 
-    public function finalize(): self
+    public function addText(int $y, string $text, PrintSize $size = PrintSize::MEDIUM, PrintAlign $alignment = PrintAlign::LEFT): void
     {
-        $this->commands[] = 'PRINT ' . $this->copies;
-        return $this;
+        $scale = $this->sizeMap[$size->value];
+        $textWidth = strlen($text) * (12 * $scale[0]);
+
+        $x = 0;
+        if ($alignment == PrintAlign::CENTER) {
+            $x = ($this->labelWidth - $textWidth) / 2;
+        } elseif ($alignment == PrintAlign::RIGHT) {
+            $x = $this->labelWidth - $textWidth;
+        }
+
+        $this->buffer .= "TEXT {$x},{$y},\"0\",0,{$scale[0]},{$scale[1]},\"{$text}\"\n";
     }
 
-    protected function mapSpeed(string $speed): string|int
+    public function addBarcode(int $y, string $data, int $height = 50): void
     {
-        return match ($speed) {
-            'slow' => '2',
-            'normal' => '4',
-            'fast' => '6'
-        };
+        $barcodeWidth = strlen($data) * 20;
+        $x = ($this->labelWidth - $barcodeWidth) / 2;
+
+        $this->buffer .= "BARCODE {$x},{$y},\"128\",{$height},1,0,2,2,\"{$data}\"\n";
     }
 
-    protected function mapDensity(string $density): string|int
+    public function print(int $copies = 1): void
     {
-        return match ($density) {
-            'light' => '5',
-            'medium_light' => '8',
-            'medium' => '10',
-            'dark' => '15'
-        };
-    }
-
-    public function addText(string $text, int $y, int $xMul = 1, int $yMul = 1, string $align = 'left'): self
-    {
-        $x = match ($align) {
-            'center' => $this->centerX(strlen($text) * 12 * $xMul),
-            'right' => $this->rightX(strlen($text) * 12 * $xMul),
-            default => 0
-        };
-        $this->commands[] = "TEXT {$x},{$y},\"1\",0,{$xMul},{$yMul},\"{$text}\"";
-        return $this;
-    }
-
-    public function addBarcode(string $data, int $y, int $height = 50, string $align = 'left'): self
-    {
-        $x = match ($align) {
-            'center' => $this->centerX(strlen($data) * 12),
-            'right' => $this->rightX(strlen($data) * 12),
-            default => 0
-        };
-        $this->commands[] = "BARCODE {$x},{$y},\"128\",{$height},1,0,2,2,\"{$data}\"";
-        return $this;
+        $this->buffer .= "PRINT {$copies}\n";
     }
 }
