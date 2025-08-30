@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\Printer\CreatePrinter;
 use App\Actions\Printer\DeletePrinter;
+use App\Actions\Printer\TestPrinter;
 use App\Actions\Printer\UpdatePrinter;
 use App\Http\Requests\Printer\CreatePrinterRequest;
 use App\Http\Requests\Printer\UpdatePrinterRequest;
@@ -41,6 +42,19 @@ class PrinterController extends Controller
         } catch (\Throwable $th) {
             dd($th);
             return to_route('printers.index')->with('error', $th->getMessage());
+        }
+    }
+
+    public function testPrint(Printer $printer, TestPrinter $testPrinter)
+    {
+        try {
+            $testPrinter->handle($printer);
+
+            return to_route('printers.index')
+                ->with('success', "{$printer->name} print will be ready soon.");
+        } catch (\Throwable $th) {
+            return to_route('printers.index')
+                ->with('error', "Failed to print {$printer->name}.");
         }
     }
 

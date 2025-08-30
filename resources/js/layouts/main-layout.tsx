@@ -1,4 +1,6 @@
+import FlashToast from '@/components/flash-toast';
 import Header from '@/components/header';
+import { Toaster } from '@/components/ui/sonner';
 import { cn } from '@/lib/utils';
 import { Link, usePage } from '@inertiajs/react';
 import { Activity, Printer, Settings } from 'lucide-react';
@@ -43,6 +45,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                     </Link>
                 </nav>
                 {children}
+                <FlashToast />
+                <Toaster />
             </main>
         </div>
     );

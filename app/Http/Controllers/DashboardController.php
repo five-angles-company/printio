@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PrintJob;
+use App\Services\DashboardService;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(DashboardService $dashboardService)
     {
         return inertia('dashboard', [
-            'stats' => [
-                'totalPrinters' => 0,
-                'totalJobs' => 0,
-                'successRate' => 0,
-            ],
-            'jobs' => [],
+            'stats' => $dashboardService->getStats(),
+            'jobs' => $dashboardService->getRecentJobs(),
         ]);
     }
 }

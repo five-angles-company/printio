@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import MainLayout from '@/layouts/main-layout';
 import { printerIcon, statusColor, statusIcon } from '@/lib/utils';
 import { PrintJob } from '@/types';
+import { formatDistanceToNow } from 'date-fns';
 import { CheckCircle2, FileText, Printer } from 'lucide-react';
 
 interface DashboardProps {
@@ -42,7 +43,7 @@ export default function Dashboard({ jobs, stats }: DashboardProps) {
                                     <div>
                                         <p className="font-medium text-slate-900">{job.name}</p>
                                         <p className="text-sm text-slate-500">
-                                            {job.printer?.name} • {job.created_at as string}
+                                            {job.printer?.name} • {formatDistanceToNow(job.created_at, { addSuffix: true })}
                                         </p>
                                     </div>
                                 </div>

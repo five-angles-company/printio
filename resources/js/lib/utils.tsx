@@ -9,11 +9,11 @@ export function cn(...inputs: ClassValue[]) {
 
 export function statusColor(status: string) {
     switch (status) {
-        case 'completed':
+        case 'Completed':
             return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-        case 'failed':
+        case 'Failed':
             return 'bg-red-100 text-red-700 border-red-200';
-        case 'pending':
+        case 'Pending':
             return 'bg-amber-100 text-amber-700 border-amber-200';
         default:
             return 'bg-gray-100 text-gray-700 border-gray-200';
@@ -21,11 +21,11 @@ export function statusColor(status: string) {
 }
 export function statusIcon(status: string) {
     switch (status) {
-        case 'completed':
+        case 'Completed':
             return <CheckCircle2 className="h-3 w-3" />;
-        case 'failed':
+        case 'Failed':
             return <XCircle className="h-3 w-3" />;
-        case 'pending':
+        case 'Pending':
             return <Clock className="h-3 w-3" />;
         default:
             return <Clock className="h-3 w-3" />;

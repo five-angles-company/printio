@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PrinterType;
 use App\Enums\PrintJobStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -16,7 +17,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('printer_id')->constrained('printers')->cascadeOnDelete();
             $table->string('name');
-            $table->enum('type', array_column(PrintJobStatus::cases(), 'value'));
+            $table->enum('type', array_column(PrinterType::cases(), 'value'));
+            $table->enum('status', array_column(PrintJobStatus::cases(), 'value'))->default(PrintJobStatus::PENDING);
             $table->json('data');
             $table->timestamps();
         });

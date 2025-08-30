@@ -12,6 +12,7 @@ Route::prefix('printers')->name('printers.')->group(function () {
     Route::post('/', [PrinterController::class, 'store'])->name('store');
     Route::put('/{printer}', [PrinterController::class, 'update'])->name('update');
     Route::delete('/{printer}', [PrinterController::class, 'destroy'])->name('destroy');
+    Route::post('/{printer}/test', [PrinterController::class, 'testPrint'])->name('test');
 });
 Route::get('/printers', [PrinterController::class, 'index'])->name('printers.index');
 Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');

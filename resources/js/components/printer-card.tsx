@@ -2,6 +2,7 @@ import { printerIcon, printerStatusColor, printerStatusIcon } from '@/lib/utils'
 import { Printer } from '@/types';
 import { router } from '@inertiajs/react';
 import { PrinterCheck, XCircle } from 'lucide-react';
+import { useState } from 'react';
 import PrinterSettings from './printer-settings';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
@@ -11,10 +12,26 @@ interface PrinterCardProps {
 }
 
 function PrinterCard({ printer }: PrinterCardProps) {
+    const [testLoading, setTestLoading] = useState(false);
     const handleDeletePrinter = () => {
         router.delete(route('printers.destroy', printer.id));
     };
-    const handleTestPrinter = () => {};
+    const handleTestPrinter = () => {
+        router.post(
+            route('printers.test', printer.id),
+            {},
+            {
+                showProgress: false,
+                preserveScroll: true,
+                onStart: () => {
+                    setTestLoading(true);
+                },
+                onSuccess: () => {
+                    setTestLoading(false);
+                },
+            },
+        );
+    };
 
     return (
         <Card key={printer.id} className="group relative border-0 bg-white shadow-sm">
@@ -36,7 +53,7 @@ function PrinterCard({ printer }: PrinterCardProps) {
                 </div>
 
                 <div className="flex items-center justify-end space-x-2">
-                    <Button variant="outline" size="sm" onClick={handleTestPrinter}>
+                    <Button variant="outline" size="sm" onClick={handleTestPrinter} loading={testLoading}>
                         <PrinterCheck className="mr-1 h-3 w-3" />
                         Test
                     </Button>
