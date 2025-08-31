@@ -21,7 +21,7 @@ jobs:
           coverage: none
 
       - name: Install Composer dependencies
-        run: composer install --no-dev --optimize-autoloader
+        run: composer install --optimize-autoloader
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -85,6 +85,8 @@ jobs:
           GITHUB_PRIVATE=true
           EOL
 
+      - name: Check PHP binary existence
+        run: dir vendor\nativephp\php-bin\bin\win\x64
       - name: Publish NativePHP app
         run: php artisan native:publish win x64
         env:
