@@ -1,4 +1,4 @@
-name: Build & Release Printio
+name: Build & Release Printbridge
 
 on:
   push:
@@ -26,27 +26,52 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
 
-      - name: Install React dependencies
+      - name: Install JS dependencies
         run: npm ci
 
       - name: Build frontend
         run: npm run build
 
+      # ✅ Generate .env at the root
+      - name: Generate .env file for packaging
+        run: |
+          cat > .env <<EOL
+          NATIVEPHP_APP_VERSION=${{ github.ref_name }}
+          NATIVEPHP_APP_ID=com.printio.app
+          NATIVEPHP_APP_AUTHOR="Dahmane Abdelmalek"
+          NATIVEPHP_APP_DESCRIPTION="Bridge your local printers"
+          NATIVEPHP_APP_WEBSITE=https://five-angles.com/
+          NATIVEPHP_UPDATER_PROVIDER=github
+
+          APP_NAME=Printio
+          APP_ENV=production
+          APP_DEBUG=false
+          APP_URL=http://localhost:8000
+
+          APP_LOCALE=en
+          APP_FALLBACK_LOCALE=en
+          APP_FAKER_LOCALE=en_US
+
+          LOG_CHANNEL=stack
+          LOG_LEVEL=debug
+
+          DB_CONNECTION=sqlite
+          SESSION_DRIVER=database
+          SESSION_LIFETIME=120
+
+          BROADCAST_CONNECTION=log
+          FILESYSTEM_DISK=local
+          QUEUE_CONNECTION=database
+          CACHE_STORE=database
+
+          GITHUB_REPO=printio
+          GITHUB_OWNER=five-angles-company
+          GITHUB_PRIVATE=true
+          EOL
+
       - name: Publish NativePHP app
         run: php artisan native:publish win x64
         env:
-          APP_ENV: production
-          APP_KEY: ${{ secrets.APP_KEY }}
-          NATIVEPHP_APP_VERSION: ${{ github.ref_name }}
-          NATIVEPHP_APP_ID: com.printio.app
-          NATIVEPHP_APP_AUTHOR: 'Dahmane Abdelmalek'
-          NATIVEPHP_APP_DESCRIPTION: 'Bridge your local printers'
-          NATIVEPHP_APP_WEBSITE: https://five-angles.com/
-          NATIVEPHP_UPDATER_PROVIDER: github
-          VITE_APP_NAME: Printbridge
-          GITHUB_REPO: printio
-          GITHUB_OWNER: five-angles-company
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          GITHUB_PRIVATE: true
