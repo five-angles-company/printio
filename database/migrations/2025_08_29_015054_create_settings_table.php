@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('label_printer')->constrained('printers')->cascadeOnDelete();
             $table->foreignId('receipt_printer')->constrained('printers')->cascadeOnDelete();
-            $table->string('client_id');
-            $table->string('token');
+            $table->string('client_id')->nullable();
+            $table->string('token')->nullable();
             $table->timestamps();
         });
     }
