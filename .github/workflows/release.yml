@@ -39,7 +39,7 @@ jobs:
         run: |
           VERSION=${GITHUB_REF_NAME#v} 
           cat > .env <<EOL
-          NATIVEPHP_APP_VERSION=${{ github.ref_name }}
+          NATIVEPHP_APP_VERSION=$VERSION
           NATIVEPHP_APP_ID=com.printio.app
           NATIVEPHP_APP_AUTHOR="Dahmane Abdelmalek"
           NATIVEPHP_APP_DESCRIPTION="Bridge your local printers"
