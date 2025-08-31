@@ -36,6 +36,7 @@ jobs:
 
       # ✅ Generate clean .env at the root
       - name: Generate .env file for packaging
+        shell: bash
         run: |
           VERSION=${GITHUB_REF_NAME#v}
           cat > .env <<EOL
