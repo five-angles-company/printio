@@ -158,7 +158,7 @@ return [
     ],
 
     'postbuild' => [
-        // 'rm -rf public/build',
+        'npx rimraf public/build',
     ],
 
     /**

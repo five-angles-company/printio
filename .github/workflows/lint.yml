@@ -1,45 +1,26 @@
-name: linter
+name: Build & Release Printio
 
 on:
   push:
-    branches:
-      - develop
-      - main
-  pull_request:
-    branches:
-      - develop
-      - main
-
-permissions:
-  contents: write
+    tags:
+      - 'v*.*.*'
 
 jobs:
-  quality:
-    runs-on: ubuntu-latest
+  release:
+    runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repo
+        uses: actions/checkout@v3
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
-          php-version: '8.4'
+          node-version: 22
 
-      - name: Install Dependencies
-        run: |
-          composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-          npm install
+      - name: Install dependencies
+        run: npm install
 
-      - name: Run Pint
-        run: vendor/bin/pint
-
-      - name: Format Frontend
-        run: npm run format
-
-      - name: Lint Frontend
-        run: npm run lint
-
-      # - name: Commit Changes
-      #   uses: stefanzweifel/git-auto-commit-action@v5
-      #   with:
-      #     commit_message: fix code style
-      #     commit_options: '--no-verify'
+      - name: Build & Publish
+        run: npm run release
+        env:
+          GH_TOKEN: ${{ secrets.ACCESS_TOKEN }}

@@ -1,0 +1,52 @@
+name: Build & Release Printbridge
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, bcmath, pdo, sqlite, fileinfo
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Publish NativePHP app
+        run: php artisan native:publish win x64
+        env:
+          APP_ENV: production
+          APP_KEY: ${{ secrets.APP_KEY }}
+          NATIVEPHP_APP_VERSION: ${{ github.ref_name }}
+          NATIVEPHP_APP_ID: com.printio.app
+          NATIVEPHP_APP_AUTHOR: 'Dahmane Abdelmalek'
+          NATIVEPHP_APP_DESCRIPTION: 'Bridge your local printers'
+          NATIVEPHP_APP_WEBSITE: https://five-angles.com/
+          NATIVEPHP_UPDATER_PROVIDER: github
+          VITE_APP_NAME: Printbridge
+          GITHUB_REPO: printio
+          GITHUB_OWNER: five-angles-company
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          GITHUB_PRIVATE: true
