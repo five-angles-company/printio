@@ -37,6 +37,7 @@ jobs:
       # ✅ Generate .env at the root
       - name: Generate .env file for packaging
         run: |
+          VERSION=${GITHUB_REF_NAME#v} 
           cat > .env <<EOL
           NATIVEPHP_APP_VERSION=${{ github.ref_name }}
           NATIVEPHP_APP_ID=com.printio.app
