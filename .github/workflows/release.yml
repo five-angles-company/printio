@@ -1,4 +1,4 @@
-name: Build & Release Printbridge
+name: Build & Release Printio
 
 on:
   push:
