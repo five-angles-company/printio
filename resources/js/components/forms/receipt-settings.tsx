@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Switch } from '../ui/switch';
 
 interface ReceiptSettingsProps {
-    settings: Record<string, unknown>;
+    settings: Record<string, string | number | boolean>;
     printerId: number;
     handleOpen: (open: boolean) => void;
 }
@@ -13,9 +13,9 @@ interface ReceiptSettingsProps {
 function ReceiptSettings({ settings, printerId, handleOpen }: ReceiptSettingsProps) {
     const { put, data, setData, processing } = useForm({
         settings: {
-            paper_size: (settings?.paper_size as string) || '',
-            print_density: (settings?.print_density as string) || '',
-            print_speed: (settings?.print_speed as string) || '',
+            paperSize: (settings?.paperSize.toString() as string) || '',
+            printDensity: (settings?.printDensity as string) || '',
+            printSpeed: (settings?.printSpeed as string) || '',
             cut: (settings?.cut as boolean) || false,
             beep: (settings?.beep as boolean) || false,
         },
@@ -43,8 +43,8 @@ function ReceiptSettings({ settings, printerId, handleOpen }: ReceiptSettingsPro
                             <div className="space-y-2">
                                 <label>Paper size:</label>
                                 <Select
-                                    value={data.settings.paper_size}
-                                    onValueChange={(value) => setData('settings', { ...data.settings, paper_size: value })}
+                                    value={data.settings.paperSize}
+                                    onValueChange={(value) => setData('settings', { ...data.settings, paperSize: value })}
                                 >
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Select size" />
@@ -66,8 +66,8 @@ function ReceiptSettings({ settings, printerId, handleOpen }: ReceiptSettingsPro
                             <div className="space-y-2">
                                 <label>Print Density</label>
                                 <Select
-                                    value={data.settings.print_density}
-                                    onValueChange={(value) => setData('settings', { ...data.settings, print_density: value })}
+                                    value={data.settings.printDensity}
+                                    onValueChange={(value) => setData('settings', { ...data.settings, printDensity: value })}
                                 >
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Select density" />
@@ -85,8 +85,8 @@ function ReceiptSettings({ settings, printerId, handleOpen }: ReceiptSettingsPro
                             <div className="space-y-2">
                                 <label>Print Speed</label>
                                 <Select
-                                    value={data.settings.print_speed}
-                                    onValueChange={(value) => setData('settings', { ...data.settings, print_speed: value })}
+                                    value={data.settings.printSpeed}
+                                    onValueChange={(value) => setData('settings', { ...data.settings, printSpeed: value })}
                                 >
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Select speed" />

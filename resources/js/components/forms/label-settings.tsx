@@ -13,17 +13,17 @@ interface LabelSettingsProps {
 function LabelSettings({ settings, printerId, handleOpen }: LabelSettingsProps) {
     const { data, setData, put, processing, errors } = useForm({
         settings: {
-            label_width: (settings?.label_width as string) || '',
-            label_height: (settings?.label_height as string) || '',
-            print_density: (settings?.print_density as string) || '',
-            print_speed: (settings?.print_speed as string) || '',
+            labelWidth: (settings?.labelWidth as string) || '',
+            labelHeight: (settings?.labelHeight as string) || '',
+            printDensity: (settings?.printDensity as string) || '',
+            printSpeed: (settings?.printSpeed as string) || '',
             encoder: (settings?.encoder as string) || '',
         },
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(route('printers.update-settings', printerId), {
+        put(route('printers.update', printerId), {
             onSuccess: () => handleOpen(false),
         });
     };
@@ -37,23 +37,23 @@ function LabelSettings({ settings, printerId, handleOpen }: LabelSettingsProps) 
                         <h4 className="font-medium text-slate-900">General Settings</h4>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label htmlFor="label_width">Label width:</label>
+                                <label htmlFor="labelWidth">Label width:</label>
                                 <Input
-                                    id="label_width"
-                                    value={data.settings.label_width}
-                                    onChange={(e) => setData('settings', { ...data.settings, label_width: e.target.value })}
+                                    id="labelWidth"
+                                    value={data.settings.labelWidth}
+                                    onChange={(e) => setData('settings', { ...data.settings, labelWidth: e.target.value })}
                                 />
-                                {errors['settings.label_width'] && <p className="text-sm text-red-500">{errors['settings.label_width']}</p>}
+                                {errors['settings.labelWidth'] && <p className="text-sm text-red-500">{errors['settings.labelWidth']}</p>}
                             </div>
 
                             <div className="space-y-2">
-                                <label htmlFor="label_height">Label height:</label>
+                                <label htmlFor="labelHeight">Label height:</label>
                                 <Input
-                                    id="label_height"
-                                    value={data.settings.label_height}
-                                    onChange={(e) => setData('settings', { ...data.settings, label_height: e.target.value })}
+                                    id="labelHeight"
+                                    value={data.settings.labelHeight}
+                                    onChange={(e) => setData('settings', { ...data.settings, labelHeight: e.target.value })}
                                 />
-                                {errors['settings.label_height'] && <p className="text-sm text-red-500">{errors['settings.label_height']}</p>}
+                                {errors['settings.labelHeight'] && <p className="text-sm text-red-500">{errors['settings.labelHeight']}</p>}
                             </div>
                         </div>
                     </div>
@@ -63,10 +63,10 @@ function LabelSettings({ settings, printerId, handleOpen }: LabelSettingsProps) 
                         <h4 className="font-medium text-slate-900">Print Settings</h4>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label htmlFor="print_density">Print Density</label>
+                                <label htmlFor="printDensity">Print Density</label>
                                 <Select
-                                    value={data.settings.print_density}
-                                    onValueChange={(value) => setData('settings', { ...data.settings, print_density: value })}
+                                    value={data.settings.printDensity}
+                                    onValueChange={(value) => setData('settings', { ...data.settings, printDensity: value })}
                                 >
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Select density" />
@@ -79,14 +79,14 @@ function LabelSettings({ settings, printerId, handleOpen }: LabelSettingsProps) 
                                         <SelectItem value="dark">Dark</SelectItem>
                                     </SelectContent>
                                 </Select>
-                                {errors['settings.print_density'] && <p className="text-sm text-red-500">{errors['settings.print_density']}</p>}
+                                {errors['settings.printDensity'] && <p className="text-sm text-red-500">{errors['settings.printDensity']}</p>}
                             </div>
 
                             <div className="space-y-2">
-                                <label htmlFor="print_speed">Print Speed</label>
+                                <label htmlFor="printSpeed">Print Speed</label>
                                 <Select
-                                    value={data.settings.print_speed}
-                                    onValueChange={(value) => setData('settings', { ...data.settings, print_speed: value })}
+                                    value={data.settings.printSpeed}
+                                    onValueChange={(value) => setData('settings', { ...data.settings, printSpeed: value })}
                                 >
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Select speed" />
@@ -97,7 +97,7 @@ function LabelSettings({ settings, printerId, handleOpen }: LabelSettingsProps) 
                                         <SelectItem value="fast">Fast</SelectItem>
                                     </SelectContent>
                                 </Select>
-                                {errors['settings.print_speed'] && <p className="text-sm text-red-500">{errors['settings.print_speed']}</p>}
+                                {errors['settings.printSpeed'] && <p className="text-sm text-red-500">{errors['settings.printSpeed']}</p>}
                             </div>
                         </div>
 
@@ -111,9 +111,9 @@ function LabelSettings({ settings, printerId, handleOpen }: LabelSettingsProps) 
                                     <SelectValue placeholder="Select encoder" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="tspl">TSPL</SelectItem>
-                                    <SelectItem value="epl">EPL</SelectItem>
-                                    <SelectItem value="zpl">ZPL</SelectItem>
+                                    <SelectItem value="Tspl">TSPL</SelectItem>
+                                    <SelectItem value="Epl">EPL</SelectItem>
+                                    <SelectItem value="Zpl">ZPL</SelectItem>
                                 </SelectContent>
                             </Select>
                             {errors['settings.encoder'] && <p className="text-sm text-red-500">{errors['settings.encoder']}</p>}

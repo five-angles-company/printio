@@ -36,7 +36,7 @@ export type PrintJobStatus = 'Pending' | 'Completed' | 'Failed';
 
 export interface PrinterSettings {
     id: number;
-    settings: Record<string, unknown>;
+    settings: Record<string, string | number | boolean>;
     printer_id: number;
     printer?: Printer;
 }

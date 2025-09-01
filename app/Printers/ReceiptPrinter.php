@@ -3,11 +3,11 @@
 namespace App\Printers;
 
 use App\Data\ReceiptData;
+use App\Data\ReceiptSettings;
 use App\Encoders\EscPosEncoder;
-use App\Models\Printer;
+use App\Models\PrinterSettings;
 use App\Models\PrintJob;
 use App\Traits\PrintsRaw;
-use Spatie\Browsershot\Browsershot;
 
 class ReceiptPrinter extends BasePrinter
 {
@@ -19,22 +19,26 @@ class ReceiptPrinter extends BasePrinter
      * @param array $data
      * @return string
      */
-    public function renderReceipt(ReceiptData $data): string
+    public function renderReceipt(ReceiptData $data, PrinterSettings $printerSettings): string
     {
+        /** @var ReceiptSettings $settings */
+        $settings = $printerSettings->settings;
+        $paperSize = $this->mmToPx($settings->paperSize, $settings->dpi);
         $html = view('receipts.main', $data)->render();
+        $snappy = app('snappy.image');
 
-        $screenshot = Browsershot::html($html)
-            ->windowSize(576, 2000) // width fixed, height large enough
-            ->setScreenshotType('png')
-            ->fullPage()
-            ->screenshot();
+        $screenshot = $snappy
+            ->setOption('format', 'png')
+            ->setOption('width', $paperSize)
+            ->getOutputFromHtml($html);
 
         $encoder = (new EscPosEncoder())
             ->initialize()
-            ->align('center')
-            ->text("test")
-            ->feed(3)
-            ->cut();
+            ->image($screenshot, $paperSize, $settings->dpi)
+            ->feed(6)
+            ->cut($settings->cut)
+            ->beep($settings->beep);
+
         return $encoder->getBuffer();
     }
 
@@ -50,7 +54,23 @@ class ReceiptPrinter extends BasePrinter
         /** @var ReceiptData $data */
         $data = $printJob->data;
         $printer = $printJob->printer;
-        $buffer = $this->renderReceipt($data);
+        $settings = $printer->printerSettings;
+        $buffer = $this->renderReceipt($data, $settings);
         return $this->printRaw($printer->name, $buffer, $printJob->name, true);
+    }
+
+    private function mmToPx(string $mm, int $dpi = 203): int
+    {
+        // Convert string to float
+        $mmValue = floatval($mm);
+
+        // Convert mm to inches
+        $inches = $mmValue / 25.4;
+
+        // Convert inches to pixels
+        $px = $inches * $dpi;
+
+        // Return rounded pixel value
+        return (int) round($px);
     }
 }

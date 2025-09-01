@@ -3,8 +3,6 @@
 namespace App\Encoders;
 
 use Illuminate\Support\Facades\Log;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 
 class EscPosEncoder
 {
@@ -12,81 +10,44 @@ class EscPosEncoder
 
     public function initialize(): self
     {
-        return $this->command([0x1b, 0x40]); // ESC @
-    }
-
-    public function text(string $text): self
-    {
-        $this->commands[] = $text;
+        $this->commands[] = pack('C2', 0x1b, 0x40); // ESC @ - Initialize printer
+        $this->commands[] = pack('C3', 0x1b, 0x61, 0x01); // ESC ? - Reset printer
         return $this;
     }
 
-    public function line(string $text = ''): self
-    {
-        return $this->text($text . "\n");
-    }
-
-    public function align(string $position): self
-    {
-        $map = ['left' => 0, 'center' => 1, 'right' => 2];
-        return $this->command([0x1b, 0x61, $map[$position] ?? 0]);
-    }
-
-    public function bold(bool $on = true): self
-    {
-        return $this->command([0x1b, 0x45, $on ? 1 : 0]);
-    }
-
-    public function feed(int $lines = 1): self
-    {
-        return $this->command([0x1b, 0x64, $lines]);
-    }
-
-    public function cut(bool $on = true): self
-    {
-        if (!$on) {
-            return $this;
-        }
-        return $this->command([0x1d, 0x56, 0x00]);
-    }
-
-    public function beep(bool $on = true, int $times = 3, int $duration = 6): self
-    {
-        if (!$on) {
-            return $this;
-        }
-        $n = max(1, min($times, 9));
-        $t = max(1, min($duration, 9));
-        return $this->command([0x1b, 0x42, $n, $t]);
-    }
-
-    private function command(array $bytes): self
-    {
-        $this->commands[] = pack('C*', ...$bytes);
-        return $this;
-    }
-
-    public function image(string $data, float $widthMm = 72, int $threshold = 160, int $dpi = 203): self
+    public function image(string $pngBinary, float $width, int $dpi = 203): self
     {
         try {
-            $pixels = intval(round(($widthMm / 25.4) * $dpi));
+            $pixels = intval($width);
+            // Use GD directly for better performance
+            $img = imagecreatefromstring($pngBinary);
+            if (!$img) {
+                throw new \Exception('Invalid image data');
+            }
 
-            $manager = new ImageManager(new GdDriver());
+            // Get current dimensions
+            $origWidth = imagesx($img);
+            $origHeight = imagesy($img);
 
-            // Read binary image (JPG/PNG raw bytes)
-            $img = $manager->read($data)
-                ->resize($pixels, null, function ($c) {
-                    $c->aspectRatio();
-                    $c->upsize();
-                })
-                ->greyscale();
+            // Calculate new dimensions maintaining aspect ratio
+            $newHeight = intval(($pixels / $origWidth) * $origHeight);
 
-            [$width, $height, $bitmap] = $this->convertToBitmap($img, $threshold);
+            // Create resized grayscale image
+            $resized = imagecreatetruecolor($pixels, $newHeight);
+            imagecopyresampled($resized, $img, 0, 0, 0, 0, $pixels, $newHeight, $origWidth, $origHeight);
+            imagefilter($resized, IMG_FILTER_GRAYSCALE);
 
-            $widthBytes = (int) ceil($width / 8);
+            [$width, $height, $bitmap] = $this->convertToBitmapFast($resized, $pixels, $newHeight);
 
-            // ESC/POS raster image command (GS v 0)
-            $this->command([
+            // Cleanup
+            imagedestroy($img);
+            imagedestroy($resized);
+
+            $widthBytes = ($width + 7) >> 3; // Faster ceil division by 8
+
+            // Pre-calculate command bytes
+            $this->commands[] = pack(
+                'C8C*',
                 0x1d,
                 0x76,
                 0x30,
@@ -95,44 +56,69 @@ class EscPosEncoder
                 ($widthBytes >> 8) & 0xff,
                 $height & 0xff,
                 ($height >> 8) & 0xff,
-            ]);
-
-            $this->commands[] = pack('C*', ...$bitmap);
+                ...$bitmap
+            );
         } catch (\Throwable $e) {
             Log::error('Image encoding error: ' . $e->getMessage());
-            $this->line('[IMAGE ERROR]');
         }
 
         return $this;
     }
 
-    private function convertToBitmap($img, int $threshold): array
+    public function feed(int $lines = 1): self
     {
-        $width = $img->width();
-        $height = $img->height();
-        $widthBytes = (int) ceil($width / 8);
-        $bitmap = [];
+        $this->commands[] = pack('C3', 0x1b, 0x64, $lines);
+        return $this;
+    }
+
+    public function beep(bool $enable = true, int $times = 1): self
+    {
+        if ($enable) {
+            $times = min($times, 3); // max 3 beeps per call
+            $this->commands[] = pack('C4', 0x1b, 0x42, 0x05, 0x05);
+            if ($times > 1) {
+                for ($i = 1; $i < $times; $i++) {
+                    $this->commands[] = pack('C4', 0x1b, 0x42, 0x05, 0x05);
+                }
+            }
+        }
+
+        return $this;
+    }
+
+    public function cut(bool $enable = true): self
+    {
+        if ($enable) {
+            $this->commands[] = pack('C3', 0x1d, 0x56, 0x00);
+        }
+
+        return $this;
+    }
+
+
+    private function convertToBitmapFast($img, int $width, int $height): array
+    {
+        $widthBytes = ($width + 7) >> 3;
+        $bitmap = array_fill(0, $widthBytes * $height, 0);
+        $threshold = 128;
+        $bitMasks = [0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01]; // Pre-calculated bit masks
 
         for ($y = 0; $y < $height; $y++) {
-            for ($xByte = 0; $xByte < $widthBytes; $xByte++) {
-                $byte = 0;
-                for ($bit = 0; $bit < 8; $bit++) {
-                    $x = $xByte * 8 + $bit;
-                    if ($x < $width) {
-                        $color = $img->pickColor($x, $y);
-                        $gray = $color->red(); // after greyscale, R=G=B
-                        if ($gray < $threshold) {
-                            $byte |= (0x80 >> $bit);
-                        }
-                    }
+            $rowOffset = $y * $widthBytes;
+            for ($x = 0; $x < $width; $x++) {
+                $rgb = imagecolorat($img, $x, $y);
+                // Extract red component (grayscale, so R=G=B)
+                $gray = ($rgb >> 16) & 0xFF;
+
+                if ($gray < $threshold) {
+                    $byteIndex = $rowOffset + ($x >> 3); // x / 8
+                    $bitmap[$byteIndex] |= $bitMasks[$x & 7]; // x % 8
                 }
-                $bitmap[] = $byte;
             }
         }
 
         return [$width, $height, $bitmap];
     }
-
 
     public function getBuffer(): string
     {

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\PrinterSettingsCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,7 +16,7 @@ class PrinterSettings extends Model
     ];
 
     protected $casts = [
-        'settings' => 'array',
+        'settings' => PrinterSettingsCast::class,
     ];
 
     public function printer()

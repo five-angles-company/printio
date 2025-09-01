@@ -2,6 +2,8 @@
 
 namespace App\Actions\Printer;
 
+use App\Data\LabelSettings;
+use App\Data\ReceiptSettings;
 use App\Models\Printer;
 use Illuminate\Support\Arr;
 
@@ -28,23 +30,11 @@ final class CreatePrinter
     /**
      * Get default settings by type.
      */
-    private function getDefaultSettings(string $type): array
+    private function getDefaultSettings(string $type): ReceiptSettings|LabelSettings
     {
         return match ($type) {
-            'Receipt' => [
-                'paper_size' => '72',
-                'print_density' => 'medium',
-                'print_speed' => 'normal',
-                'cut' => false,
-                'beep' => false,
-            ],
-            'Label' => [
-                'label_width' => '40',
-                'label_height' => '20',
-                'print_density' => 'medium',
-                'print_speed' => 'normal',
-                'encoder' => 'tspl',
-            ],
+            'Receipt' => new ReceiptSettings(),
+            'Label' => new LabelSettings(),
             default => [],
         };
     }
