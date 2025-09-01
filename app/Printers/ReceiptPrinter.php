@@ -4,7 +4,7 @@ namespace App\Printers;
 
 use App\Data\ReceiptData;
 use App\Data\ReceiptSettings;
-use App\Encoders\EscPosEncoder;
+use App\Encoders\Receipt\EscPosEncoder;
 use App\Models\PrinterSettings;
 use App\Models\PrintJob;
 use App\Traits\PrintsRaw;

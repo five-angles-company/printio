@@ -3,16 +3,13 @@
 namespace App\Printers;
 
 use App\Data\LabelData;
-use App\Encoders\BaseLabelEncoder;
-use App\Encoders\DplEncoder;
-use App\Encoders\EplEncoder;
-use App\Encoders\TsplEncoder;
-use App\Encoders\ZplEncoder;
+use App\Data\LabelSettings;
+use App\Encoders\Label\EplEncoder;
+use App\Encoders\Label\TsplEncoder;
+use App\Encoders\Label\ZplEncoder;
 use App\Enums\LabelEncoder;
-use App\Enums\PrintAlign;
-use App\Enums\PrintDensity;
-use App\Enums\PrintSize;
-use App\Enums\PrintSpeed;
+use App\Encoders\Label\BaseEncoder;
+use App\Models\PrinterSettings;
 use App\Models\PrintJob;
 use App\Traits\PrintsRaw;
 
@@ -25,45 +22,30 @@ class LabelPrinter extends BasePrinter
         /** @var LabelData $data */
         $data = $printJob->data;
         $printer = $printJob->printer;
-        $buffer = $this->renderLabel($data,  LabelEncoder::TSPL);
+        $settings = $printer->printerSettings;
+        $buffer = $this->renderLabel($data, $settings);
         return $this->printRaw($printer->name, $buffer, $printJob->name, true);
     }
 
-    private function renderLabel(LabelData $data, LabelEncoder $encoderType = LabelEncoder::TSPL): string
+    private function renderLabel(LabelData $data, PrinterSettings $printerSettings): string
     {
-        $encoder = $this->resolveEncoder($encoderType);
+        /** @var LabelSettings $settings */
+        $settings = $printerSettings->settings;
+
+        $encoder = $this->resolveEncoder($settings->encoder);
 
         // Set label width (assuming 4 inch standard label)
-        $encoder->setLabelSize(2, 1);
-
-        // Initialize with medium density and normal speed
-        $encoder->initialize(PrintDensity::MEDIUM, PrintSpeed::NORMAL);
-
-        // Add product name (centered, large)
-        $encoder->addText(50, $data->productName, PrintSize::SMALL, PrintAlign::CENTER);
-
-        // Add price (left aligned, normal)
-        $encoder->addText(80, "Price: $" . number_format($data->price, 2), PrintSize::SMALL, PrintAlign::LEFT);
-
-        // Add expiry date (right aligned, normal)
-        $encoder->addText(80, "Exp: " . $data->expiry, PrintSize::SMALL, PrintAlign::RIGHT);
-
-        // Add barcode (always centered)
-        $encoder->addBarcode(130, $data->barcode, 60);
-
-        // Set print copies
-        $encoder->print($data->copies);
-
-        return $encoder->getBuffer();
+        return $encoder->initialize(2, 1)
+            ->barcode('7640118193909', 30, 80)
+            ->getBuffer();
     }
 
-    private function resolveEncoder(LabelEncoder $encoder): BaseLabelEncoder
+    private function resolveEncoder(string $encoder): BaseEncoder
     {
         return match ($encoder) {
-            LabelEncoder::ZPL => new ZplEncoder(),
-            LabelEncoder::EPL => new EplEncoder(),
-            LabelEncoder::TSPL => new TsplEncoder(),
-            LabelEncoder::DPL => new DplEncoder(),
+            LabelEncoder::ZPL->value => new ZplEncoder(),
+            LabelEncoder::EPL->value => new EplEncoder(),
+            LabelEncoder::TSPL->value => new TsplEncoder(),
         };
     }
 }

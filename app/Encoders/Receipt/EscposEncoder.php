@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Encoders;
+namespace App\Encoders\Receipt;
 
 use Illuminate\Support\Facades\Log;
 
@@ -10,7 +10,7 @@ class EscPosEncoder
 
     public function initialize(): self
     {
-        $this->commands[] = pack('C2', 0x1b, 0x40); // ESC @ - Initialize printer
+        $this->commands[] = pack('C2', 0x1b, 0x40);
         $this->commands[] = pack('C3', 0x1b, 0x61, 0x01); // ESC ? - Reset printer
         return $this;
     }

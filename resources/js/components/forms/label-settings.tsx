@@ -1,7 +1,6 @@
 import { useForm } from '@inertiajs/react';
 import { Button } from '../ui/button';
 import { DialogClose } from '../ui/dialog';
-import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface LabelSettingsProps {
@@ -13,10 +12,7 @@ interface LabelSettingsProps {
 function LabelSettings({ settings, printerId, handleOpen }: LabelSettingsProps) {
     const { data, setData, put, processing, errors } = useForm({
         settings: {
-            labelWidth: (settings?.labelWidth as string) || '',
-            labelHeight: (settings?.labelHeight as string) || '',
-            printDensity: (settings?.printDensity as string) || '',
-            printSpeed: (settings?.printSpeed as string) || '',
+            labelSize: (settings?.labelSize as string) || '',
             encoder: (settings?.encoder as string) || '',
         },
     });
@@ -34,73 +30,30 @@ function LabelSettings({ settings, printerId, handleOpen }: LabelSettingsProps) 
                 <div className="space-y-6">
                     {/* General Settings */}
                     <div className="space-y-4">
-                        <h4 className="font-medium text-slate-900">General Settings</h4>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label htmlFor="labelWidth">Label width:</label>
-                                <Input
-                                    id="labelWidth"
-                                    value={data.settings.labelWidth}
-                                    onChange={(e) => setData('settings', { ...data.settings, labelWidth: e.target.value })}
-                                />
-                                {errors['settings.labelWidth'] && <p className="text-sm text-red-500">{errors['settings.labelWidth']}</p>}
-                            </div>
-
-                            <div className="space-y-2">
-                                <label htmlFor="labelHeight">Label height:</label>
-                                <Input
-                                    id="labelHeight"
-                                    value={data.settings.labelHeight}
-                                    onChange={(e) => setData('settings', { ...data.settings, labelHeight: e.target.value })}
-                                />
-                                {errors['settings.labelHeight'] && <p className="text-sm text-red-500">{errors['settings.labelHeight']}</p>}
-                            </div>
+                        <div className="space-y-2">
+                            <label htmlFor="labelSize">Label Size</label>
+                            <Select
+                                value={data.settings.labelSize}
+                                onValueChange={(value) => setData('settings', { ...data.settings, labelSize: value })}
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select Size" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="4x4">1" x 4"</SelectItem>
+                                    <SelectItem value="4x3">4" x 3"</SelectItem>
+                                    <SelectItem value="4x2">4" x 2"</SelectItem>
+                                    <SelectItem value="4x1">4" x 1"</SelectItem>
+                                    <SelectItem value="3x3">3" x 3"</SelectItem>
+                                    <SelectItem value="3x2">3" x 2"</SelectItem>
+                                    <SelectItem value="3x1">3" x 1"</SelectItem>
+                                    <SelectItem value="2x2">2" x 2"</SelectItem>
+                                    <SelectItem value="2x1">2" x 1"</SelectItem>
+                                    <SelectItem value="1x1">1" x 1</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            {errors['settings.labelSize'] && <p className="text-sm text-red-500">{errors['settings.labelSize']}</p>}
                         </div>
-                    </div>
-
-                    {/* Print Settings */}
-                    <div className="space-y-4">
-                        <h4 className="font-medium text-slate-900">Print Settings</h4>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label htmlFor="printDensity">Print Density</label>
-                                <Select
-                                    value={data.settings.printDensity}
-                                    onValueChange={(value) => setData('settings', { ...data.settings, printDensity: value })}
-                                >
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Select density" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="light">Light</SelectItem>
-                                        <SelectItem value="medium_light">Medium Light</SelectItem>
-                                        <SelectItem value="medium">Medium</SelectItem>
-                                        <SelectItem value="medium_dark">Medium Dark</SelectItem>
-                                        <SelectItem value="dark">Dark</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                {errors['settings.printDensity'] && <p className="text-sm text-red-500">{errors['settings.printDensity']}</p>}
-                            </div>
-
-                            <div className="space-y-2">
-                                <label htmlFor="printSpeed">Print Speed</label>
-                                <Select
-                                    value={data.settings.printSpeed}
-                                    onValueChange={(value) => setData('settings', { ...data.settings, printSpeed: value })}
-                                >
-                                    <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Select speed" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="slow">Slow</SelectItem>
-                                        <SelectItem value="normal">Normal</SelectItem>
-                                        <SelectItem value="fast">Fast</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                {errors['settings.printSpeed'] && <p className="text-sm text-red-500">{errors['settings.printSpeed']}</p>}
-                            </div>
-                        </div>
-
                         <div className="space-y-2">
                             <label htmlFor="encoder">Encoder</label>
                             <Select
