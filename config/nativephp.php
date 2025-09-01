@@ -61,9 +61,7 @@ return [
     'cleanup_env_keys' => [
         'AWS_*',
         'AZURE_*',
-        'GITHUB_*',
         'DO_SPACES_*',
-        '*_SECRET',
         'ZEPHPYR_*',
         'NATIVEPHP_UPDATER_PATH',
         'NATIVEPHP_APPLE_ID',
@@ -84,7 +82,6 @@ return [
         'build',
         'temp',
         'content',
-        'node_modules',
         '*/tests',
     ],
 
@@ -97,7 +94,7 @@ return [
          * updater will only work when your application is bundled
          * for production.
          */
-        'enabled' => env('NATIVEPHP_UPDATER_ENABLED', true),
+        'enabled' => env('NATIVEPHP_UPDATER_ENABLED', false),
 
         /**
          * The updater provider to use.

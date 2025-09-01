@@ -1,3 +1,4 @@
+import AppUpdater from '@/components/app-updater';
 import PrintersSettings from '@/components/forms/printers-settings';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import MainLayout from '@/layouts/main-layout';
@@ -16,6 +17,7 @@ function Settings({ labelPrinter, receiptPrinter, printers }: SettingsProps) {
                 <p className="text-slate-600">Configure your printer bridge</p>
             </div>
             <div className="mt-4 space-y-4">
+                <AppUpdater />
                 <Card>
                     <CardHeader>
                         <CardTitle>Printers</CardTitle>

@@ -69,3 +69,25 @@ export interface PrintJob {
     created_at: string | Date;
     updated_at: string | Date;
 }
+
+export interface UpdateInfo {
+    releaseName: string;
+    version: string;
+    releaseDate: string;
+}
+
+export interface DownloadProgress {
+    total: number;
+    delta: number;
+    transferred: number;
+    percent: number;
+    bytesPerSecond: number;
+}
+
+export interface UpdateDownloaded {
+    version: string;
+    downloadedFile: string;
+    releaseDate: string;
+    releaseNotes: string | string[] | null;
+    releaseName: string | null;
+}
