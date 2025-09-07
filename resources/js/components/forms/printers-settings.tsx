@@ -5,15 +5,15 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface ConnectionSettingsProps {
-    labelPrinter: Printer | null;
-    receiptPrinter: Printer | null;
+    labelPrinter: number | null;
+    receiptPrinter: number | null;
     printers: Printer[];
 }
 
 function PrintersSettings({ labelPrinter, receiptPrinter, printers }: ConnectionSettingsProps) {
     const { put, data, setData, processing, errors, reset } = useForm({
-        label_printer: labelPrinter?.id ?? '',
-        receipt_printer: receiptPrinter?.id ?? '',
+        label_printer: labelPrinter ?? '',
+        receipt_printer: receiptPrinter ?? '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {

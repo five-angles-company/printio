@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PrinterController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UpdateController;
@@ -8,6 +9,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
 
+Route::prefix('auth')->name('auth.')->group(function () {
+    Route::get('/', [AuthController::class, 'index'])->name('index');
+    Route::post('/', [AuthController::class, 'login'])->name('login');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});
 Route::prefix('printers')->name('printers.')->group(function () {
     Route::get('/', [PrinterController::class, 'index'])->name('index');
     Route::post('/', [PrinterController::class, 'store'])->name('store');

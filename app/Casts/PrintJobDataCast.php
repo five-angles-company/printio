@@ -31,6 +31,16 @@ class PrintJobDataCast implements CastsAttributes
             return null;
         }
 
-        return json_encode($value->toArray());
+        // Handle both array and object inputs
+        if (is_array($value)) {
+            return json_encode($value);
+        }
+
+        if (is_object($value) && method_exists($value, 'toArray')) {
+            return json_encode($value->toArray());
+        }
+
+        // Fallback: cast whatever it is to array
+        return json_encode((array) $value);
     }
 }

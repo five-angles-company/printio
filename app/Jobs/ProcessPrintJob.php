@@ -38,6 +38,7 @@ class ProcessPrintJob implements ShouldQueue
         $printer = match ($printerModel->type) {
             PrinterType::RECEIPT => app(ReceiptPrinter::class),
             PrinterType::LABEL => app(LabelPrinter::class),
+            'receipt' => app(ReceiptPrinter::class),
             default   => throw new \RuntimeException("Unsupported printer type: {$printerModel->type}"),
         };
         $printer->print($this->printJob);

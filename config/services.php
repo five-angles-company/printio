@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'remote_api' => [
+        'url' => env('REMOTE_API_URL', 'http://example.com/api'),
+        'token' => env('REMOTE_API_TOKEN', null), // optional fallback
+    ],
+
 ];

@@ -5,8 +5,8 @@ import MainLayout from '@/layouts/main-layout';
 import { Printer } from '@/types';
 
 interface SettingsProps {
-    labelPrinter: Printer | null;
-    receiptPrinter: Printer | null;
+    labelPrinter: number | null;
+    receiptPrinter: number | null;
     printers: Printer[];
 }
 function Settings({ labelPrinter, receiptPrinter, printers }: SettingsProps) {

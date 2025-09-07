@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('print_jobs', function (Blueprint $table) {
             $table->id();
+            $table->integer('remote_id');
             $table->foreignId('printer_id')->constrained('printers')->cascadeOnDelete();
             $table->string('name');
             $table->enum('type', array_column(PrinterType::cases(), 'value'));

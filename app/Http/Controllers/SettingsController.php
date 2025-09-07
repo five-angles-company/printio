@@ -5,17 +5,18 @@ namespace App\Http\Controllers;
 use App\Actions\Settings\UpdateSettings;
 use App\Http\Requests\Settings\UpdateSettingsRequest;
 use App\Models\Printer;
-use App\Models\Settings;
-use Native\Laravel\Facades\System;
+use Native\Laravel\Facades\Settings;
 
 class SettingsController extends Controller
 {
     public function index()
     {
-        $settings = Settings::with(['labelPrinter', 'receiptPrinter'])->first();
+        $labelPrinter = Settings::get('label_printer');
+        $receiptPrinter = Settings::get('receipt_printer');
+
         return inertia('settings', [
-            'labelPrinter' => $settings?->labelPrinter,
-            'receiptPrinter' => $settings?->receiptPrinter,
+            'labelPrinter' => $labelPrinter,
+            'receiptPrinter' => $receiptPrinter,
             'printers' => Printer::all()
         ]);
     }
@@ -24,7 +25,9 @@ class SettingsController extends Controller
     public function update(UpdateSettingsRequest $request, UpdateSettings $updateSettings)
     {
         try {
-            $updateSettings->handle($request->validated());
+            Settings::set('label_printer', $request->input('label_printer'));
+            Settings::set('receipt_printer', $request->input('receipt_printer'));
+
             return to_route('settings.index')->with('success', 'Settings updated successfully');
         } catch (\Throwable $th) {
             dd($th);

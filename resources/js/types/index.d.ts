@@ -7,15 +7,13 @@ export interface User {
     id: number;
     name: string;
     email: string;
-    avatar?: string;
-    email_verified_at: string | null;
     created_at: string | Date;
     updated_at: string | Date;
     [key: string]: unknown;
 }
-
 export interface Auth {
     user: User;
+    token: string;
 }
 
 export type SharedData = {

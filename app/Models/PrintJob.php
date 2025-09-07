@@ -19,6 +19,7 @@ class PrintJob extends Model
     use HasFactory;
 
     protected $fillable = [
+        'remote_id',
         'printer_id',
         'name',
         'type',
