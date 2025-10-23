@@ -1,0 +1,95 @@
+name: Build & Release Printbridge
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, intl, bcmath, pdo, sqlite, fileinfo, zip
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --optimize-autoloader
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install JS dependencies
+        run: npm install
+
+      - name: Build frontend
+        run: npm run build
+
+      # ✅ Generate clean .env at the root
+      - name: Generate .env file for packaging
+        shell: bash
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          cat > .env <<EOL
+          NATIVEPHP_APP_VERSION=$VERSION
+          NATIVEPHP_APP_ID=com.printio.app
+          NATIVEPHP_APP_AUTHOR="Dahmane Abdelmalek"
+          NATIVEPHP_APP_DESCRIPTION="Bridge your local printers"
+          NATIVEPHP_APP_WEBSITE=https://five-angles.com/
+          NATIVEPHP_UPDATER_PROVIDER=github
+
+          APP_NAME=Printio
+          APP_ENV=production
+          APP_KEY=${{ secrets.APP_KEY }}
+          APP_DEBUG=false
+          APP_URL=http://localhost:8000
+
+          APP_LOCALE=en
+          APP_FALLBACK_LOCALE=en
+          APP_FAKER_LOCALE=en_US
+          APP_MAINTENANCE_DRIVER=file
+          PHP_CLI_SERVER_WORKERS=4
+          BCRYPT_ROUNDS=12
+
+          LOG_CHANNEL=stack
+          LOG_STACK=daily
+          LOG_DAILY_DAYS=3
+          LOG_LEVEL=warning
+          LOG_DEPRECATIONS_CHANNEL=null
+
+          DB_CONNECTION=sqlite
+          SESSION_DRIVER=database
+          SESSION_LIFETIME=120
+          SESSION_ENCRYPT=false
+          SESSION_PATH=/
+          SESSION_DOMAIN=null
+
+          BROADCAST_CONNECTION=log
+          FILESYSTEM_DISK=local
+          QUEUE_CONNECTION=database
+          CACHE_STORE=database
+
+          VITE_APP_NAME=Printio
+
+          GITHUB_REPO=printio
+          GITHUB_OWNER=five-angles-company
+          GITHUB_PRIVATE=false
+          EOL
+
+      - name: Check PHP binary existence
+        run: dir vendor\nativephp\php-bin\bin\win\x64
+      - name: Publish NativePHP app
+        run: php artisan native:publish win x64
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
