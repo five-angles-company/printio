@@ -33,6 +33,9 @@ jobs:
       - name: Install JS dependencies
         run: npm install
 
+      - name: Fix missing repository field
+        run: node fix-repo.mjs
+
       - name: Build frontend
         run: npm run build
 
