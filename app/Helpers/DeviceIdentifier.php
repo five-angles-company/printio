@@ -17,8 +17,9 @@ class DeviceIdentifier
         }
 
         // Generate truly unique ID: timestamp + random
-        $unique = time() . Str::random(8);
+        $unique = Str::random(8);
         Settings::set('app.unique_id', $unique);
-        return strtoupper(substr($unique, 0, 8));
+
+        return $unique;
     }
 }
