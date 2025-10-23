@@ -5,9 +5,10 @@ import { Label } from '../ui/label';
 
 interface ApiSettingsProps {
     apiUrl: string | null;
+    deviceId: string | null;
 }
 
-function ApiSettings({ apiUrl }: ApiSettingsProps) {
+function ApiSettings({ apiUrl, deviceId }: ApiSettingsProps) {
     const { put, data, setData, processing, errors, reset } = useForm({
         api_url: apiUrl ?? '',
     });
@@ -31,6 +32,10 @@ function ApiSettings({ apiUrl }: ApiSettingsProps) {
                         required
                     />
                     {errors.api_url && <p className="text-sm text-red-600">{errors.api_url}</p>}
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="label_printer">Device id</Label>
+                    <Input type="text" id="device_id" value={deviceId ?? ''} disabled />
                 </div>
             </div>
 

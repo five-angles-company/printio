@@ -11,15 +11,12 @@ class SettingsController extends Controller
 {
     public function index()
     {
-        $labelPrinter = Settings::get('label_printer');
-        $receiptPrinter = Settings::get('receipt_printer');
-        $instructionsPrinter = Settings::get('instructions_printer');
-        $apiUrl = Settings::get('api_url', '');
         return inertia('settings', [
-            'labelPrinter' => $labelPrinter,
-            'receiptPrinter' => $receiptPrinter,
-            'instructionsPrinter' => $instructionsPrinter,
-            'apiUrl' => $apiUrl,
+            'labelPrinter' => Settings::get('label_printer'),
+            'receiptPrinter' => Settings::get('receipt_printer'),
+            'instructionsPrinter' => Settings::get('instructions_printer'),
+            'apiUrl' => Settings::get('api_url', ''),
+            'deviceId' => Settings::get('app.unique_id'),
             'printers' => Printer::all()
         ]);
     }

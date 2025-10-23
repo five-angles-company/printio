@@ -10,9 +10,10 @@ interface SettingsProps {
     receiptPrinter: number | null;
     instructionsPrinter: number | null;
     apiUrl: string | null;
+    deviceId: string | null;
     printers: Printer[];
 }
-function Settings({ labelPrinter, receiptPrinter, instructionsPrinter, apiUrl, printers }: SettingsProps) {
+function Settings({ labelPrinter, receiptPrinter, instructionsPrinter, apiUrl, deviceId, printers }: SettingsProps) {
     return (
         <div>
             <div>
@@ -39,7 +40,7 @@ function Settings({ labelPrinter, receiptPrinter, instructionsPrinter, apiUrl, p
                         <CardTitle>Api</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <ApiSettings apiUrl={apiUrl} />
+                        <ApiSettings apiUrl={apiUrl} deviceId={deviceId} />
                     </CardContent>
                 </Card>
             </div>
