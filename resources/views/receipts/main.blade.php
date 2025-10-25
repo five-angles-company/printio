@@ -247,7 +247,7 @@
                             Refund<br>
                             <span class="arabic-small">المرتجع</span>
                         </td>
-                        <td class="right padding-sm bold">{{ number_format($refund, 2) }} SAR</td>
+                        <td class="right padding-sm bold">{{ number_format($totalRefund, 2) }} SAR</td>
                     </tr>
                 @endif
             </tbody>
