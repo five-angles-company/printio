@@ -58,18 +58,15 @@
         <tr>
             <td colspan="2" class="usage"><b>Usage / الاستخدام:</b></td>
         </tr>
-        <tr>
-            <td colspan="2" class="usage">- {{ $data->line1 }}</td>
-        </tr>
-        <tr>
-            <td colspan="2" class="usage">- {{ $data->line2 }}</td>
-        </tr>
-        <tr>
-            <td colspan="2" class="usage">- {{ $data->line3 }}</td>
-        </tr>
-        <tr>
-            <td colspan="2" class="usage">- {{ $data->line4 }}</td>
-        </tr>
+
+        @foreach ([$data->line1, $data->line2, $data->line3, $data->line4] as $line)
+            @if (!empty($line))
+                <tr>
+                    <td colspan="2" class="usage">- {{ $line }}</td>
+                </tr>
+            @endif
+        @endforeach
+
         <tr>
             <td>الصيدلي</td>
             <td>{{ $data->pharmacistName }}</td>
