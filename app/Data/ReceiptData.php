@@ -18,7 +18,7 @@ class ReceiptData extends Data
         public string $phone,
         public string $clientId,
         public string $type,
-        public ?string $returnCash,
-        public ?string $totalRefund,
+        public ?float $returnCash,
+        public ?float $totalRefund,
     ) {}
 }

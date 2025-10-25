@@ -2,8 +2,10 @@
 
 namespace App\Observers;
 
+use App\Enums\PrintJobStatus;
 use App\Jobs\ProcessPrintJob;
 use App\Models\PrintJob;
+use Illuminate\Container\Attributes\Log;
 
 class PrintJobObserver
 {
@@ -13,6 +15,13 @@ class PrintJobObserver
      */
     public function created(PrintJob $printJob): void
     {
-        ProcessPrintJob::dispatchSync($printJob);
+        try {
+            ProcessPrintJob::dispatchSync($printJob);
+        } catch (\Throwable $th) {
+            Log::error($th);
+            $printJob->update([
+                'status' => PrintJobStatus::FAILED,
+            ]);
+        }
     }
 }
