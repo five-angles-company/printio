@@ -232,6 +232,24 @@
                     </td>
                     <td class="right padding-sm bold">{{ number_format($total, 2) }} SAR</td>
                 </tr>
+
+                @if ($type === 'return')
+                    <tr class="border-bottom">
+                        <td class="left padding-sm">
+                            Cash<br>
+                            <span class="arabic-small">النقد</span>
+                        </td>
+                        <td class="right padding-sm bold">{{ number_format($returnCash, 2) }} SAR</td>
+                    </tr>
+
+                    <tr class="border-bottom">
+                        <td class="left padding-sm">
+                            Refund<br>
+                            <span class="arabic-small">المرتجع</span>
+                        </td>
+                        <td class="right padding-sm bold">{{ number_format($refund, 2) }} SAR</td>
+                    </tr>
+                @endif
             </tbody>
         </table>
     </div>
