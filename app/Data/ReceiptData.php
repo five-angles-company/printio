@@ -7,6 +7,7 @@ use Spatie\LaravelData\Data;
 class ReceiptData extends Data
 {
     public function __construct(
+        public string $invoiceNumber,
         public string $date,
         /** @var ReceiptItemData[] */
         public array $items,

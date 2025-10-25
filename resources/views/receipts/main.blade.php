@@ -153,7 +153,7 @@
                 </tr>
                 <tr>
                     <td class="left">Receipt No.</td>
-                    <td class="center">123456</td>
+                    <td class="center">{{ $invoiceNumber }}</td>
                     <td class="right">رقم الفاتورة</td>
                 </tr>
                 <tr>
