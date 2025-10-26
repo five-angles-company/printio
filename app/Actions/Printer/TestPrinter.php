@@ -38,6 +38,9 @@ final class TestPrinter
                 'address' => 'Test Address, Test City',
                 'phone' => '555-0123',
                 'clientId' => 'TEST001',
+                'type' => 'sale',
+                'returnCash' => null,
+                'totalRefund' => null
             ]),
             PrinterType::LABEL =>  LabelData::from([
                 'productName' => 'Test Product',
