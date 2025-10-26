@@ -23,6 +23,7 @@ final class TestPrinter
     {
         return match ($type) {
             PrinterType::RECEIPT =>  ReceiptData::from([
+                'invoiceNumber' => 'INV001',
                 'date' => date('Y-m-d'),
                 'items' => [
                     [
