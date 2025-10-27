@@ -24,6 +24,8 @@ class UpdateSettingsRequest extends FormRequest
         return [
             'label_printer' => ['nullable', 'exists:printers,id'],
             'receipt_printer' => ['nullable', 'exists:printers,id'],
+            'instructions_printer' => ['nullable', 'exists:printers,id'],
+            'pos_session_printer' => ['nullable', 'exists:printers,id'],
             'api_url' => ['nullable', 'url'],
         ];
     }

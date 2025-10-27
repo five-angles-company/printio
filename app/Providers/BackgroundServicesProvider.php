@@ -60,6 +60,7 @@ class BackgroundServicesProvider extends ServiceProvider
             'RECEIPT_PRINTER' => (string) Settings::get('receipt_printer', ''),
             'LABEL_PRINTER'   => (string) Settings::get('label_printer', ''),
             'INSTRUCTIONS_PRINTER' => (string) Settings::get('instructions_printer', ''),
+            'POS_SESSION_PRINTER' => (string) Settings::get('pos_session_printer', ''),
             'API_URL'         => (string) Settings::get('api_url', ''),
         ];
     }

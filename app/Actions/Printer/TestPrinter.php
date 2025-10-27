@@ -4,6 +4,7 @@ namespace App\Actions\Printer;
 
 use App\Data\InstructionsData;
 use App\Data\LabelData;
+use App\Data\PosSessionData;
 use App\Data\ReceiptData;
 use App\Enums\PrinterType;
 use App\Models\Printer;
@@ -19,7 +20,7 @@ final class TestPrinter
         ]);
     }
 
-    public function getTestData(PrinterType $type): ReceiptData|LabelData|InstructionsData
+    public function getTestData(PrinterType $type): ReceiptData|LabelData|InstructionsData|PosSessionData
     {
         return match ($type) {
             PrinterType::RECEIPT =>  ReceiptData::from([
@@ -61,6 +62,37 @@ final class TestPrinter
                 "ألف سلامة",
                 1
             ),
+
+            PrinterType::POS_SESSION => new PosSessionData(
+                id: 120241217001,
+                branchName: 'PHARMACY 1',
+                userName: 'YAHIA',
+                status: 'closed',
+                startBalance: '0.00',
+                totalSales: 0.00,
+                totalInsurance: 0.00,
+                totalCash: 0.00,
+                cashReturn: 0.00,
+                insuranceReturn: 0.00,
+                customerDiscount: 0.00,
+                insuranceDiscount: 0.00,
+                discrepancies: 0.00,
+                totalVisa: 0.00,
+                totalCard: 0.00,
+                totalMada: 0.00,
+                totalMoqafaat: 0.00,
+                totalStc: 0.00,
+                totalTabby: 0.00,
+                totalTamara: 0.00,
+                closingBalance: 0.00,
+                createdBy: 'YAHIA',
+                totalSaleInvoices: 0,
+                totalReturnInvoices: 0,
+                createdAt: '2024-12-17 22:24:06',
+                updatedAt: '2024-12-17 22:41:05',
+                closedAt: '2024-12-17 22:41:05',
+                totalTime: '00:17:00'
+            )
         };
     }
 }

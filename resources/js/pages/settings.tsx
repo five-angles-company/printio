@@ -9,11 +9,12 @@ interface SettingsProps {
     labelPrinter: number | null;
     receiptPrinter: number | null;
     instructionsPrinter: number | null;
+    posSessionPrinter: number | null;
     apiUrl: string | null;
     deviceId: string | null;
     printers: Printer[];
 }
-function Settings({ labelPrinter, receiptPrinter, instructionsPrinter, apiUrl, deviceId, printers }: SettingsProps) {
+function Settings({ labelPrinter, receiptPrinter, instructionsPrinter, posSessionPrinter, apiUrl, deviceId, printers }: SettingsProps) {
     return (
         <div>
             <div>
@@ -31,6 +32,7 @@ function Settings({ labelPrinter, receiptPrinter, instructionsPrinter, apiUrl, d
                             labelPrinter={labelPrinter}
                             receiptPrinter={receiptPrinter}
                             instructionsPrinter={instructionsPrinter}
+                            posSessionPrinter={posSessionPrinter}
                             printers={printers}
                         />
                     </CardContent>

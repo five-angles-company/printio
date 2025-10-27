@@ -4,6 +4,7 @@ namespace App\Actions\Printer;
 
 use App\Data\InstructionsSettings;
 use App\Data\LabelSettings;
+use App\Data\PosSessionSettings;
 use App\Data\ReceiptSettings;
 use App\Enums\PrinterType;
 use App\Models\Printer;
@@ -40,6 +41,7 @@ final class CreatePrinter
             'Receipt' => new ReceiptSettings(),
             'Label' => new LabelSettings(),
             'Instructions' => new InstructionsSettings(),
+            'POS Session' => new PosSessionSettings(),
             default => [],
         };
     }
@@ -53,6 +55,7 @@ final class CreatePrinter
             'Receipt' => 'receipt_printer',
             'Label' => 'label_printer',
             'Instructions' => 'instructions_printer',
+            'POS Session' => 'pos_session_printer',
             default => null,
         };
 
@@ -62,7 +65,6 @@ final class CreatePrinter
 
         // Get current value
         $current = Settings::get($key);
-
         // Only set it if not already defined
         if (empty($current)) {
             Settings::set($key, $printer->id); // ✅ use ID (safer than name)

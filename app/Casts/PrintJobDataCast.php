@@ -4,6 +4,7 @@ namespace App\Casts;
 
 use App\Data\InstructionsData;
 use App\Data\LabelData;
+use App\Data\PosSessionData;
 use App\Data\ReceiptData;
 use App\Enums\PrinterType;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PrintJobDataCast implements CastsAttributes
 {
-    public function get(Model $model, string $key, mixed $value, array $attributes): ReceiptData|LabelData|InstructionsData|null
+    public function get(Model $model, string $key, mixed $value, array $attributes): ReceiptData|LabelData|InstructionsData|PosSessionData|null
     {
         if ($value === null) {
             return null;
@@ -23,6 +24,7 @@ class PrintJobDataCast implements CastsAttributes
             PrinterType::RECEIPT->value => ReceiptData::from($data),
             PrinterType::LABEL->value => LabelData::from($data),
             PrinterType::INSTRUCTIONS->value => InstructionsData::from($data),
+            PrinterType::POS_SESSION->value => PosSessionData::from($data),
             default => null,
         };
     }

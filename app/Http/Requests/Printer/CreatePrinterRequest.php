@@ -25,6 +25,7 @@ class CreatePrinterRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
+            'display_name' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:255'],
             'type' => ['required', new Enum(PrinterType::class)],
         ];

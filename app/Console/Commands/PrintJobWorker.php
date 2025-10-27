@@ -31,6 +31,7 @@ class PrintJobWorker extends Command
                     $labelPrinter        = $this->optionalEnv('LABEL_PRINTER');
                     $receiptPrinter      = $this->optionalEnv('RECEIPT_PRINTER');
                     $instructionsPrinter = $this->optionalEnv('INSTRUCTIONS_PRINTER');
+                    $posSessionPrinter   = $this->optionalEnv('POS_SESSION_PRINTER');
                 } catch (\Throwable $e) {
                     $this->error("Startup error: " . $e->getMessage());
                     return Command::FAILURE;
@@ -47,7 +48,8 @@ class PrintJobWorker extends Command
                             $jobData['type'],
                             $labelPrinter,
                             $receiptPrinter,
-                            $instructionsPrinter
+                            $instructionsPrinter,
+                            $posSessionPrinter
                         );
 
                         PrintJob::firstOrCreate(
@@ -83,12 +85,18 @@ class PrintJobWorker extends Command
         }
     }
 
-    private function resolvePrinterId(string $type, ?string $labelPrinter, ?string $receiptPrinter, ?string $instructionsPrinter): ?int
-    {
+    private function resolvePrinterId(
+        string $type,
+        ?string $labelPrinter,
+        ?string $receiptPrinter,
+        ?string $instructionsPrinter,
+        ?string $posSessionPrinter
+    ): ?int {
         $printerId = match ($type) {
             PrinterType::LABEL->value        => $labelPrinter,
             PrinterType::RECEIPT->value      => $receiptPrinter,
             PrinterType::INSTRUCTIONS->value => $instructionsPrinter,
+            PrinterType::POS_SESSION->value  => $posSessionPrinter,
             default                          => null,
         };
 

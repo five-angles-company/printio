@@ -7,6 +7,7 @@ use App\Enums\PrintJobStatus;
 use App\Models\PrintJob;
 use App\Printers\InstructionsPrinter;
 use App\Printers\LabelPrinter;
+use App\Printers\PosSessionPrinter;
 use App\Printers\ReceiptPrinter;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -40,6 +41,7 @@ class ProcessPrintJob implements ShouldQueue
             PrinterType::RECEIPT => app(ReceiptPrinter::class),
             PrinterType::LABEL => app(LabelPrinter::class),
             PrinterType::INSTRUCTIONS => app(InstructionsPrinter::class),
+            PrinterType::POS_SESSION => app(PosSessionPrinter::class),
             'receipt' => app(ReceiptPrinter::class),
             default   => throw new \RuntimeException("Unsupported printer type: {$printerModel->type}"),
         };

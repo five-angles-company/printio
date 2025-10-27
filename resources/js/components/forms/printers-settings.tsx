@@ -8,14 +8,16 @@ interface ConnectionSettingsProps {
     labelPrinter: number | null;
     receiptPrinter: number | null;
     instructionsPrinter: number | null;
+    posSessionPrinter: number | null;
     printers: Printer[];
 }
 
-function PrintersSettings({ labelPrinter, receiptPrinter, instructionsPrinter, printers }: ConnectionSettingsProps) {
+function PrintersSettings({ labelPrinter, receiptPrinter, instructionsPrinter, posSessionPrinter, printers }: ConnectionSettingsProps) {
     const { put, data, setData, processing, errors, reset } = useForm({
         label_printer: labelPrinter ?? '',
         receipt_printer: receiptPrinter ?? '',
         instructions_printer: instructionsPrinter ?? '',
+        pos_session_printer: posSessionPrinter ?? '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -40,7 +42,7 @@ function PrintersSettings({ labelPrinter, receiptPrinter, instructionsPrinter, p
                         <SelectContent className="w-full">
                             {printers?.map((printer) => (
                                 <SelectItem key={printer.id} value={String(printer.id)}>
-                                    {printer.name}
+                                    {printer.display_name}
                                 </SelectItem>
                             ))}
                         </SelectContent>
@@ -62,7 +64,7 @@ function PrintersSettings({ labelPrinter, receiptPrinter, instructionsPrinter, p
                         <SelectContent className="w-full">
                             {printers?.map((printer) => (
                                 <SelectItem key={printer.id} value={String(printer.id)}>
-                                    {printer.name}
+                                    {printer.display_name}
                                 </SelectItem>
                             ))}
                         </SelectContent>
@@ -84,12 +86,33 @@ function PrintersSettings({ labelPrinter, receiptPrinter, instructionsPrinter, p
                         <SelectContent className="w-full">
                             {printers?.map((printer) => (
                                 <SelectItem key={printer.id} value={String(printer.id)}>
-                                    {printer.name}
+                                    {printer.display_name}
                                 </SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
                     {errors.instructions_printer && <p className="text-sm text-red-600">{errors.instructions_printer}</p>}
+                </div>
+                {/* Pos Session Printer */}
+                <div className="space-y-2">
+                    <Label htmlFor="receipt_printer">Pos Session Printer</Label>
+                    <Select
+                        onValueChange={(value) => setData('pos_session_printer', Number(value))}
+                        value={data.pos_session_printer ? String(data.pos_session_printer) : ''}
+                        disabled={!printers.length}
+                    >
+                        <SelectTrigger id="receipt_printer" className="w-full">
+                            <SelectValue placeholder="Select printer" />
+                        </SelectTrigger>
+                        <SelectContent className="w-full">
+                            {printers?.map((printer) => (
+                                <SelectItem key={printer.id} value={String(printer.id)}>
+                                    {printer.display_name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    {errors.pos_session_printer && <p className="text-sm text-red-600">{errors.pos_session_printer}</p>}
                 </div>
             </div>
 

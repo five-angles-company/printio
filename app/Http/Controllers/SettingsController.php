@@ -15,6 +15,7 @@ class SettingsController extends Controller
             'labelPrinter' => Settings::get('label_printer'),
             'receiptPrinter' => Settings::get('receipt_printer'),
             'instructionsPrinter' => Settings::get('instructions_printer'),
+            'posSessionPrinter' => Settings::get('pos_session_printer'),
             'apiUrl' => Settings::get('api_url', ''),
             'deviceId' => Settings::get('app.unique_id'),
             'printers' => Printer::all()
@@ -29,6 +30,7 @@ class SettingsController extends Controller
             isset($request->label_printer) && Settings::set('label_printer', $request->input('label_printer'));
             isset($request->receipt_printer) && Settings::set('receipt_printer', $request->input('receipt_printer'));
             isset($request->instructions_printer) && Settings::set('instructions_printer', $request->input('instructions_printer'));
+            isset($request->pos_session_printer) && Settings::set('pos_session_printer', $request->input('pos_session_printer'));
             if (isset($request->api_url)) {
                 Settings::set('api_url', $request->input('api_url'));
                 Settings::forget('auth');

@@ -40,7 +40,7 @@ function PrinterCard({ printer }: PrinterCardProps) {
                     <div className="flex items-center space-x-3">
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100">{printerIcon(printer.type)}</div>
                         <div>
-                            <h3 className="font-semibold text-slate-900">{printer.name}</h3>
+                            <h3 className="font-semibold text-slate-900">{printer.display_name}</h3>
                             <p className="text-sm text-slate-500 capitalize">{printer.type} Printer</p>
                         </div>
                     </div>

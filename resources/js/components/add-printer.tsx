@@ -1,9 +1,10 @@
 import { SystemPrinter } from '@/types';
 import { useForm } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from './ui/button';
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
@@ -14,6 +15,7 @@ function AddPrinter({ systemPrinters }: AddPrinterProps) {
     const [open, setOpen] = useState(false);
     const { post, data, setData, processing, reset } = useForm({
         name: '',
+        display_name: '',
         description: '',
         type: '',
     });
@@ -27,6 +29,10 @@ function AddPrinter({ systemPrinters }: AddPrinterProps) {
             },
         });
     };
+
+    useEffect(() => {
+        setData('display_name', data.name);
+    }, [data.name, setData]);
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -58,10 +64,23 @@ function AddPrinter({ systemPrinters }: AddPrinterProps) {
                             </SelectContent>
                         </Select>
                     </div>
+                    <div className="grid gap-3">
+                        <Label htmlFor="printer-name">Display Name</Label>
+                        <Input
+                            id="display-name"
+                            type="text"
+                            value={data.display_name}
+                            onChange={(e) => setData('display_name', e.target.value)}
+                            required
+                        />
+                    </div>
 
                     <div className="grid gap-3">
                         <Label htmlFor="printer-type">Type</Label>
-                        <Select onValueChange={(value) => setData('type', value as 'receipt' | 'a4' | 'label')} value={data.type}>
+                        <Select
+                            onValueChange={(value) => setData('type', value as 'receipt' | 'instructions' | 'label' | 'pos_session')}
+                            value={data.type}
+                        >
                             <SelectTrigger id="printer-type" className="w-full">
                                 <SelectValue placeholder="Select a type" />
                             </SelectTrigger>
@@ -69,6 +88,7 @@ function AddPrinter({ systemPrinters }: AddPrinterProps) {
                                 <SelectItem value="Label">Label</SelectItem>
                                 <SelectItem value="Receipt">Receipt</SelectItem>
                                 <SelectItem value="Instructions">Instructions</SelectItem>
+                                <SelectItem value="POS Session">POS Session</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

@@ -28,7 +28,7 @@ export type SharedData = {
 // --------------------
 export type PrinterStatus = 'Ready' | 'Printer Busy' | 'Printer Door Open' | 'Paper Out' | 'Printer Offline' | 'Error' | 'Printing';
 
-export type PrinterType = 'Label' | 'Receipt' | 'Instructions';
+export type PrinterType = 'Label' | 'Receipt' | 'Instructions' | 'POS Session';
 
 export type PrintJobStatus = 'Pending' | 'Completed' | 'Failed';
 
