@@ -7,9 +7,9 @@ use App\Data\LabelSettings;
 use App\Data\PosSessionSettings;
 use App\Data\ReceiptSettings;
 use App\Enums\PrinterType;
+use App\Exceptions\DuplicatePrintTypeException;
 use App\Models\Printer;
 use Illuminate\Support\Arr;
-use Native\Laravel\Facades\Settings;
 
 final class CreatePrinter
 {
@@ -18,16 +18,14 @@ final class CreatePrinter
      */
     public function handle(array $data): Printer
     {
-        // Create the base printer
+        if (Printer::where('type', $data['type'])->exists()) {
+            throw new DuplicatePrintTypeException();
+        }
         $printer = Printer::create(Arr::except($data, ['settings']));
 
-        // Attach printer settings (based on type)
         $printer->printerSettings()->create([
             'settings' => $this->getDefaultSettings($printer->type),
         ]);
-
-        // Ensure a default printer is set for this type
-        $this->setAsDefaultIfMissing($printer);
 
         return $printer;
     }
@@ -44,30 +42,5 @@ final class CreatePrinter
             'POS Session' => new PosSessionSettings(),
             default => [],
         };
-    }
-
-    /**
-     * If there’s no default printer of this type, set this one as default.
-     */
-    private function setAsDefaultIfMissing(Printer $printer): void
-    {
-        $key = match ($printer->type->value) {
-            'Receipt' => 'receipt_printer',
-            'Label' => 'label_printer',
-            'Instructions' => 'instructions_printer',
-            'POS Session' => 'pos_session_printer',
-            default => null,
-        };
-
-        if (! $key) {
-            return;
-        }
-
-        // Get current value
-        $current = Settings::get($key);
-        // Only set it if not already defined
-        if (empty($current)) {
-            Settings::set($key, $printer->id); // ✅ use ID (safer than name)
-        }
     }
 }

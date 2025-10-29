@@ -2,36 +2,42 @@
 
 namespace App\Encoders\Label;
 
-class TsplEncoder extends BaseEncoder
+class TSPLEncoder extends BaseEncoder
 {
-    protected $labelWidthInches = 3;
-    protected $labelHeightInches = 2;
-
-    public function initialize($widthInches = 3, $heightInches = 2)
+    protected function dpi(): int
     {
-        $this->labelWidthInches = $widthInches;
-        $this->labelHeightInches = $heightInches;
-        $this->labelWidth = round($widthInches * 203);
-        $this->labelHeight = round($heightInches * 203);
-        $this->buffer = "SIZE {$widthInches},{$heightInches}\nCLS\n";
-        return $this;
+        return 203;
     }
 
-    public function text($content, $x, $y, $size = 1)
+    protected function buildHeader(): void
     {
-        $fontSize = round($size / 2); // Adjust size for TSPL
-        $this->buffer .= "TEXT {$x},{$y},\"3\",0,{$fontSize},{$fontSize},\"{$content}\"\r\n";
-        return $this;
+        $widthInches = $this->widthMm / 25.4;
+        $heightInches = $this->heightMm / 25.4;
+        $this->commands[] = "SIZE {$widthInches},{$heightInches}";
+        $this->commands[] = "CLS";
+        $this->commands[] = "REFERENCE 0,0";
+        $this->commands[] = "DIRECTION 1";
     }
 
-    public function barcode($data, $x, $y)
+    protected function buildFooter(): void
     {
-        $this->buffer .= "BARCODE {$x},{$y},\"128\",60,1,0,2,2,\"{$data}\"\r\n";
-        return $this;
+        $this->commands[] = "PRINT {$this->copies}";
     }
 
-    public function getBuffer()
+    protected function textCommand(int $x, int $y, string $text, int $fontSize): string
     {
-        return $this->buffer . "PRINT 1,{$this->getCopies()}\r\n";
+        // TSPL uses font numbers directly (1-5)
+        return "TEXT {$x},{$y},\"{$fontSize}\",0,1,1,\"{$text}\"";
+    }
+
+    protected function barcodeCommand(int $x, int $y, string $data, int $height): string
+    {
+        return "BARCODE {$x},{$y},\"128\",{$height},1,0,2,2,\"{$data}\"";
+    }
+
+    protected function mapFontSize(string $size): int
+    {
+        // TSPL uses font numbers directly
+        return self::FONT_SIZES[$size];
     }
 }

@@ -1,7 +1,7 @@
 import { SystemPrinter } from '@/types';
 import { useForm } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from './ui/button';
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Input } from './ui/input';
@@ -29,10 +29,6 @@ function AddPrinter({ systemPrinters }: AddPrinterProps) {
             },
         });
     };
-
-    useEffect(() => {
-        setData('display_name', data.name);
-    }, [data.name, setData]);
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>

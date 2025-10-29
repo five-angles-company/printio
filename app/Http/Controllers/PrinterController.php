@@ -29,7 +29,6 @@ class PrinterController extends Controller
             $printer = $createPrinter->handle($request->validated());
             return to_route('printers.index')->with('success', "$printer->name created successfully");
         } catch (\Throwable $th) {
-            dd($th);
             return to_route('printers.index')->with('error', $th->getMessage());
         }
     }

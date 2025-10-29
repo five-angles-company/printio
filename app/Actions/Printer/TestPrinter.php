@@ -24,6 +24,7 @@ final class TestPrinter
     {
         return match ($type) {
             PrinterType::RECEIPT =>  ReceiptData::from([
+                'branchName' => 'Test Branch',
                 'invoiceNumber' => 'INV001',
                 'date' => date('Y-m-d'),
                 'items' => [

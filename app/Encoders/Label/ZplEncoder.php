@@ -1,32 +1,59 @@
 <?php
 
-
 namespace App\Encoders\Label;
 
-class ZplEncoder extends BaseEncoder
+class ZPLEncoder extends BaseEncoder
 {
-    public function initialize($widthInches = 3, $heightInches = 2)
+    protected function dpi(): int
     {
-        parent::initialize($widthInches, $heightInches);
-        $this->buffer = "^XA^PW{$this->labelWidth}";
-        return $this;
+        return 203;
     }
 
-    public function text($content, $x, $y, $size = 20)
+    protected function buildHeader(): void
     {
-        $this->buffer .= "^FO{$x},{$y}^A0N,{$size},{$size}^FD{$content}^FS";
-        return $this;
+        $heightDots = $this->mmToDot($this->heightMm);
+        $widthDots = $this->mmToDot($this->widthMm);
+
+        $this->commands[] = "^XA";
+        $this->commands[] = "^MNY";
+        $this->commands[] = "^LH0,0";
+        $this->commands[] = "^LL{$heightDots}";
+        $this->commands[] = "^PW{$widthDots}";
     }
 
-    public function barcode($data, $x, $y)
+    protected function buildFooter(): void
     {
-        $this->buffer .= "^FO{$x},{$y}^BCN,60,Y,N,Y^FD{$data}^FS";
-        return $this;
+        $this->commands[] = "^PQ{$this->copies}";
+        $this->commands[] = "^XZ";
     }
 
-    public function getBuffer(): string
+    protected function textCommand(int $x, int $y, string $text, int $fontSize): string
     {
-        // ^PQ for copies, then close with ^XZ
-        return $this->buffer . "^PQ{$this->getCopies()}^XZ";
+        // ZPL needs width and height parameters
+        $fontDimensions = $this->getZplFontDimensions($fontSize);
+        return "^FO{$x},{$y}^A0N,{$fontDimensions[0]},{$fontDimensions[1]}^FD{$text}^FS";
+    }
+
+    protected function barcodeCommand(int $x, int $y, string $data, int $height): string
+    {
+        return "^FO{$x},{$y}^BY2^BCN,{$height},Y,N^FD{$data}^FS";
+    }
+
+    protected function mapFontSize(string $size): int
+    {
+        // ZPL also uses 1-5 for consistency, but maps to different dimensions
+        return self::FONT_SIZES[$size];
+    }
+
+    private function getZplFontDimensions(int $fontSize): array
+    {
+        return match ($fontSize) {
+            1 => [12, 20],  // xs: 12x20
+            2 => [16, 24],  // s: 16x24  
+            3 => [24, 32],  // m: 24x32
+            4 => [32, 48],  // l: 32x48
+            5 => [48, 72],  // xl: 48x72
+            default => [24, 32] // default to medium
+        };
     }
 }

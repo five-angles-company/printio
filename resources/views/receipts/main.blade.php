@@ -143,7 +143,7 @@
             <tbody>
                 <tr>
                     <td class="left">Branch</td>
-                    <td class="center">01</td>
+                    <td class="center">{{ $branchName }}</td>
                     <td class="right">فرع المجمعة</td>
                 </tr>
                 <tr>

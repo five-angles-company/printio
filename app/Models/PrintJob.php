@@ -3,8 +3,6 @@
 namespace App\Models;
 
 use App\Casts\PrintJobDataCast;
-use App\Data\LabelData;
-use App\Data\ReceiptData;
 use App\Enums\PrinterType;
 use App\Enums\PrintJobStatus;
 use App\Observers\PrintJobObserver;

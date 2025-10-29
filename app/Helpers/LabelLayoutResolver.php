@@ -11,9 +11,9 @@ class LabelLayoutResolver
      * Base design (3x2 inches) positions
      */
     protected static array $baseLayout = [
-        'pharmacy' => ['x' => 20, 'y' => 30, 'size' => 1],
+        'pharmacy' => ['x' => 50, 'y' => 30, 'size' => 1],
         'drug'     => ['x' => 20, 'y' => 70, 'size' => 1],
-        'barcode'  => ['x' => 20, 'y' => 120],
+        'barcode'  => ['x' => 20, 'y' => 120, 'size' => 1],
         'barcode_text' => ['x' => 180, 'y' => 230, 'size' => 1],
         'price'    => ['x' => 20, 'y' => 280, 'size' => 1],
         'date'     => ['x' => 400, 'y' => 280, 'size' => 1],
