@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Settings\UpdateSettings;
 use App\Http\Requests\Settings\UpdateSettingsRequest;
 use App\Models\Printer;
+use Native\Laravel\Facades\App;
 use Native\Laravel\Facades\Settings;
 
 class SettingsController extends Controller
@@ -24,6 +25,9 @@ class SettingsController extends Controller
         if (isset($request->api_url)) {
             Settings::set('api_url', $request->input('api_url'));
             Settings::forget('auth');
+        }
+        if (isset($request->auto_start)) {
+            App::openAtLogin($request->input('auto_start'));
         }
         return to_route('settings.index')->with('success', 'Settings updated successfully');
     }

@@ -1,5 +1,6 @@
 import { SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
+import AutoStartSwitch from './autostart-switch';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { Button } from './ui/button';
 import {
@@ -37,7 +38,8 @@ function Header() {
                 </div>
 
                 {/* Right side */}
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center gap-4 space-x-3">
+                    <AutoStartSwitch />
                     {!token ? (
                         <Link href={route('auth.login')}>
                             <Button variant="outline">Login</Button>
