@@ -47,9 +47,9 @@ final class TestPrinter
             ]),
             PrinterType::LABEL =>  LabelData::from([
                 'productName' => 'Test Product',
-                'barcode' => '1234567890',
+                'barcode' => '1234567890123',
                 'price' => 99.99,
-                'expiry' => '2023-12-31',
+                'expiry' => '2023.12.31',
                 'copies' => 1,
             ]),
 

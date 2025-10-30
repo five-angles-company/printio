@@ -40,7 +40,7 @@ class LabelPrinter extends BasePrinter
             ->text("Almoharib Pharmacy", 'center', 'top', $fontSize, 0, 2)        // Large font, centered top
             ->text($data->productName, 'center', 'top', $fontSize, 0, 5)        // Large font, centered top
             ->barcode($data->barcode, 'center', 'center', $barcodeSize, 0, -2)     // Medium height barcode
-            ->text("SR: \${$data->price}", 'left', 'bottom', $fontSize, 2, 3)   // Small font, left bottom
+            ->text("SR:{$data->price}", 'left', 'bottom', $fontSize, 2, 3)   // Small font, left bottom
             ->text($data->expiry, 'right', 'bottom', $fontSize, 2, 3)           // Small font, right bottom
             ->copies($data->copies)
             ->getBuffer();

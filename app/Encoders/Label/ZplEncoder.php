@@ -36,7 +36,7 @@ class ZPLEncoder extends BaseEncoder
 
     protected function barcodeCommand(int $x, int $y, string $data, int $height): string
     {
-        return "^FO{$x},{$y}^BY2^BCN,{$height},Y,N^FD{$data}^FS";
+        return "^FO{$x},{$y}^BY1^BCN,{$height},Y,N^FD{$data}^FS";
     }
 
     protected function mapFontSize(string $size): int

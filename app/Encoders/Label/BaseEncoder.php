@@ -154,21 +154,33 @@ abstract class BaseEncoder
         return strlen($text) * $multiplier;
     }
 
-    protected function calculateBarcodeWidth(string $data): float
+    protected function calculateBarcodeWidth(string $data, float $moduleWidth = 1): float
     {
         $dataLength = strlen($data);
+
+        // Rough estimation for Code128 barcode:
+        // 11 start + (11 per character) + 11 stop + 13 termination pattern
         $totalModules = 11 + ($dataLength * 11) + 11 + 13;
-        return $totalModules * 0.25;
+
+        // Convert module width (in dots) to millimeters.
+        // For 203 dpi: 1 dot = 25.4 / 203 ≈ 0.125 mm
+        $mmPerDot = 25.4 / $this->dpi();
+
+        // Each module = moduleWidth * mmPerDot
+        return $totalModules * $moduleWidth * $mmPerDot;
     }
 
     protected function calculateXPosition(string $align, float $elementWidth, float $offset = 0): float
     {
-        return match ($align) {
-            'left' => $offset,
+        $x = match ($align) {
+            'left'   => $offset,
             'center' => ($this->widthMm - $elementWidth) / 2 + $offset,
-            'right' => $this->widthMm - $elementWidth - $offset,
-            default => $offset
+            'right'  => $this->widthMm - $elementWidth - $offset,
+            default  => $offset,
         };
+
+        // Prevent negative coordinates (ZPL ^FO doesn’t allow them)
+        return max(0, $x);
     }
 
     protected function calculateYPosition(string $align, float $offset = 0): float
