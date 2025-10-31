@@ -3,4 +3,5 @@
 return [
     App\Providers\AppServiceProvider::class,
     App\Providers\BackgroundServicesProvider::class,
+    Milon\Barcode\BarcodeServiceProvider::class,
 ];

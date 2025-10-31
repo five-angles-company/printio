@@ -1,10 +1,8 @@
 import { Printer } from '@/types';
 import { Settings } from 'lucide-react';
 import { useState } from 'react';
-import InstructionsSettings from './forms/instructions-settings';
 import LabelSettings from './forms/label-settings';
 import ReceiptSettings from './forms/receipt-settings';
-import SessionsSettings from './forms/sessions-settings';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 
@@ -26,9 +24,9 @@ function PrinterSettings({ printer }: PrinterSettingsProps) {
             case 'Label':
                 return <LabelSettings settings={printer.printer_settings?.settings || {}} printerId={printer.id} handleOpen={setOpen} />;
             case 'Instructions':
-                return <InstructionsSettings settings={printer.printer_settings?.settings || {}} printerId={printer.id} handleOpen={setOpen} />;
+                return <LabelSettings settings={printer.printer_settings?.settings || {}} printerId={printer.id} handleOpen={setOpen} />;
             case 'POS Session':
-                return <SessionsSettings settings={printer.printer_settings?.settings || {}} printerId={printer.id} handleOpen={setOpen} />;
+                return <LabelSettings settings={printer.printer_settings?.settings || {}} printerId={printer.id} handleOpen={setOpen} />;
             default:
                 return <div>Unknown printer type</div>;
         }

@@ -3,74 +3,66 @@
 namespace App\Printers;
 
 use App\Data\InstructionsData;
-use App\Encoders\Receipt\EscPosEncoder;
+use App\Data\LabelSettings;
 use App\Models\PrinterSettings;
 use App\Models\PrintJob;
-use App\Traits\PrintsRaw;
+use App\Traits\WindowsPrinter;
 
 class InstructionsPrinter extends BasePrinter
 {
-    use PrintsRaw;
+    use WindowsPrinter;
 
     /**
-     * Render Instructions Blade template to ESC/POS buffer.
-     *
-     * @param InstructionsData $data
-     * @param PrinterSettings $printerSettings
-     * @return string
-     */
-    public function renderInstructions(InstructionsData $data, PrinterSettings $printerSettings): string
-    {
-        /** @var InstructionsSettings $settings */
-        $settings = $printerSettings->settings;
-        $paperSize = $this->mmToPx($settings->paperSize, $settings->dpi);
-        $html = view('instructions.main', ['data' => $data])->render();
-        $snappy = app('snappy.image');
-
-        $screenshot = $snappy
-            ->setOption('format', 'png')
-            ->setOption('width', $paperSize)
-            ->getOutputFromHtml($html);
-
-        $encoder = (new EscPosEncoder())
-            ->initialize()
-            ->image($screenshot, $paperSize, $settings->dpi)
-            ->feed(6)
-            ->cut($settings->cut)
-            ->beep($settings->beep)
-            ->copies($data->copies);
-
-        return $encoder->getBuffer();
-    }
-
-    /**
-     * Print Instructions directly to printer.
-     *
-     * @param PrintJob $printJob
-     * @return mixed
+     * Print instructions directly to printer.
      */
     public function print(PrintJob $printJob)
     {
         /** @var InstructionsData $data */
         $data = $printJob->data;
-        $printer = $printJob->printer;
-        $settings = $printer->printerSettings;
-        $buffer = $this->renderInstructions($data, $settings);
-        return $this->printRaw($printer->name, $buffer, $printJob->name, true);
+        $printerInfo = $printJob->printer;
+        $settings = $printerInfo->printerSettings;
+
+        // 1. Render instructions image
+        $tmpFile = $this->renderInstructions($data, $settings);
+
+        // 2. Dispatch print job (non-blocking)
+        $this->dispatchPrintJob($tmpFile, $printerInfo->name);
+
+        // 3. Optional cleanup handled by OS
     }
 
-    private function mmToPx(string $mm, int $dpi = 203): int
+    /**
+     * Render the instructions Blade view into a PNG file.
+     */
+    private function renderInstructions(InstructionsData $data, PrinterSettings $printerSettings): string
     {
-        // Convert string to float
-        $mmValue = floatval($mm);
+        /** @var LabelSettings $settings */
+        $settings = $printerSettings->settings;
+        $dpi = $settings->dpi ?? 203;
+        $paperSizeMm = $settings->paperSize ?? 80; // default 80mm width
 
-        // Convert mm to inches
-        $inches = $mmValue / 25.4;
+        $paperWidthPx = (int)($paperSizeMm * $dpi / 25.4);
 
-        // Convert inches to pixels
-        $px = $inches * $dpi;
+        // Render Blade template with data
+        $html = view('labels.instructions', [
+            'data' => $data,
+            'width' => $paperWidthPx,
+        ])->render();
 
-        // Return rounded pixel value
-        return (int) round($px);
+        // Generate PNG from HTML
+        $snappy = app('snappy.image');
+        $snappy->setOptions([
+            'format'  => 'png',
+            'quality' => 100,
+            'width'   => $paperWidthPx,
+        ]);
+
+        $imageData = $snappy->getOutputFromHtml($html);
+
+        // Save as temporary PNG file
+        $tmpFile = tempnam(sys_get_temp_dir(), 'instr_') . '.png';
+        file_put_contents($tmpFile, $imageData);
+
+        return $tmpFile;
     }
 }

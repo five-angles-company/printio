@@ -50,7 +50,7 @@ final class TestPrinter
                 'barcode' => '1234567890123',
                 'price' => 99.99,
                 'expiry' => '2023.12.31',
-                'copies' => 1,
+                'copies' => 2,
             ]),
 
             PrinterType::INSTRUCTIONS => new InstructionsData(

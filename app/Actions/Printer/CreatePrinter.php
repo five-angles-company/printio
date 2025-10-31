@@ -2,13 +2,12 @@
 
 namespace App\Actions\Printer;
 
-use App\Data\InstructionsSettings;
 use App\Data\LabelSettings;
-use App\Data\PosSessionSettings;
 use App\Data\ReceiptSettings;
 use App\Enums\PrinterType;
 use App\Exceptions\DuplicatePrintTypeException;
 use App\Models\Printer;
+use App\Models\PrinterSettings;
 use Illuminate\Support\Arr;
 
 final class CreatePrinter
@@ -22,7 +21,6 @@ final class CreatePrinter
             throw new DuplicatePrintTypeException();
         }
         $printer = Printer::create(Arr::except($data, ['settings']));
-
         $printer->printerSettings()->create([
             'settings' => $this->getDefaultSettings($printer->type),
         ]);
@@ -33,13 +31,13 @@ final class CreatePrinter
     /**
      * Get default settings by type.
      */
-    private function getDefaultSettings(PrinterType $type): ReceiptSettings|LabelSettings|InstructionsSettings|array
+    private function getDefaultSettings(PrinterType $type): ReceiptSettings|LabelSettings|array
     {
         return match ($type) {
-            'Receipt' => new ReceiptSettings(),
-            'Label' => new LabelSettings(),
-            'Instructions' => new InstructionsSettings(),
-            'POS Session' => new PosSessionSettings(),
+            PrinterType::RECEIPT => new ReceiptSettings(),
+            PrinterType::LABEL => new LabelSettings(),
+            PrinterType::INSTRUCTIONS => new LabelSettings(),
+            PrinterType::POS_SESSION => new LabelSettings(),
             default => [],
         };
     }

@@ -2,7 +2,6 @@
 
 namespace App\Casts;
 
-use App\Data\InstructionsSettings;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use App\Data\ReceiptSettings;
 use App\Data\LabelSettings;
@@ -18,12 +17,12 @@ class PrinterSettingsCast implements CastsAttributes
         $printer = $model->printer()->first();
 
 
-        if ($printer && $printer->type === PrinterType::LABEL) {
+        if (
+            $printer && $printer->type === PrinterType::LABEL ||
+            $printer->type === PrinterType::INSTRUCTIONS ||
+            $printer->type === PrinterType::POS_SESSION
+        ) {
             return new LabelSettings(...$data);
-        }
-
-        if ($printer && $printer->type === PrinterType::INSTRUCTIONS) {
-            return new InstructionsSettings(...$data);
         }
 
         // Default to receipt settings
@@ -32,7 +31,7 @@ class PrinterSettingsCast implements CastsAttributes
 
     public function set($model, string $key, $value, array $attributes)
     {
-        if ($value instanceof ReceiptSettings || $value instanceof LabelSettings || $value instanceof InstructionsSettings) {
+        if ($value instanceof ReceiptSettings || $value instanceof LabelSettings) {
             return json_encode($value->toArray());
         }
 

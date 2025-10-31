@@ -4,54 +4,70 @@ namespace App\Printers;
 
 use App\Data\LabelData;
 use App\Data\LabelSettings;
-use App\Encoders\Label\BaseEncoder;
-use App\Encoders\Label\TSPLEncoder;
-use App\Encoders\Label\ZPLEncoder;
-use App\Enums\LabelEncoder;
-use App\Models\PrinterSettings;
 use App\Models\PrintJob;
+use App\Models\PrinterSettings;
 use App\Traits\PrintsRaw;
+use App\Traits\WindowsPrinter;
+use Native\Laravel\Facades\ChildProcess;
+use Illuminate\Support\Facades\Log;
+use Milon\Barcode\DNS1D;
+use Milon\Barcode\Facades\DNS1DFacade;
 
 class LabelPrinter extends BasePrinter
 {
-    use PrintsRaw;
+    use WindowsPrinter;
 
     public function print(PrintJob $printJob)
     {
         /** @var LabelData $data */
         $data = $printJob->data;
-        $printer = $printJob->printer;
-        $settings = $printer->printerSettings;
-        $buffer = $this->renderLabel($data, $settings);
-        return $this->printRaw($printer->name, $buffer, $printJob->name, true);
-    }
+        $printerInfo = $printJob->printer;
 
-    private function renderLabel(LabelData $data, PrinterSettings $printerSettings): string
-    {
         /** @var LabelSettings $settings */
-        $settings = $printerSettings->settings;
-        $labelWidth = (int) $settings->labelWidth;
-        $labelHeight = (int) $settings->labelHeight;
-        $fontSize = $settings->fontSize;
-        $barcodeSize = $settings->barcodeSize;
-        $encoder = $this->resolveEncoder($settings->encoder);
-        $buffer = $encoder
-            ->size($labelWidth, $labelHeight)
-            ->text("Almoharib Pharmacy", 'center', 'top', $fontSize, 0, 2)        // Large font, centered top
-            ->text($data->productName, 'center', 'top', $fontSize, 0, 5)        // Large font, centered top
-            ->barcode($data->barcode, 'center', 'center', $barcodeSize, 0, -2)     // Medium height barcode
-            ->text("SR:{$data->price}", 'left', 'bottom', $fontSize, 2, 3)   // Small font, left bottom
-            ->text($data->expiry, 'right', 'bottom', $fontSize, 2, 3)           // Small font, right bottom
-            ->copies($data->copies)
-            ->getBuffer();
+        $settings = $printerInfo->printerSettings->settings;
 
-        return $buffer;
+        // 1. Render label image
+        $tmpFile = $this->renderLabel($data, $settings);
+
+        $this->dispatchPrintJob($tmpFile, $printerInfo->name, $data->copies);
     }
-    private function resolveEncoder(string $encoder): BaseEncoder
+
+    private function renderLabel(LabelData $data, LabelSettings $settings): string
     {
-        return match ($encoder) {
-            LabelEncoder::ZPL->value => new ZPLEncoder(),
-            LabelEncoder::TSPL->value => new TSPLEncoder(),
-        };
+        $labelWidth = $settings->labelWidth;
+        $labelHeight = $settings->labelHeight;
+        $dpi = $settings->dpi;
+
+        $widthPx  = (int)($labelWidth * $dpi / 25.4);
+        $heightPx = (int)($labelHeight * $dpi / 25.4);
+        $barcodeImg = DNS1DFacade::getBarcodePNG($data->barcode, 'C128');
+        $viewData = [
+            'storeName'   => 'Almoharib Pharmacy',
+            'productName' => $data->productName,
+            'barcode'     => $data->barcode,
+            'barcodeImg' => $barcodeImg,
+            'price'       => number_format($data->price, 2),
+            'expiry'      => $data->expiry,
+            'width'       => $widthPx,
+            'height'      => $heightPx,
+        ];
+
+        $html = view('labels.main', $viewData)->render();
+
+
+
+        $snappy = app('snappy.image');
+        $snappy->setOptions([
+            'format'                => 'png',
+            'quality'               => 100,
+            'width'                 => $widthPx,
+            'height'                => $heightPx,
+        ]);
+
+        $imageData = $snappy->getOutputFromHtml($html);
+        $tmpFile   = tempnam(sys_get_temp_dir(), 'label_') . '.png';
+        file_put_contents($tmpFile, $imageData);
+
+        return $tmpFile;
     }
 }

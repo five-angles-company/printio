@@ -6,45 +6,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Receipt Template</title>
     <style>
+        html,
         body {
-            font-family: 'Cairo', sans-serif;
-            margin: 0 auto;
+            margin: 0;
             padding: 0;
+            width: 100%;
             background-color: white;
             color: black;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            font-family: 'Cairo', sans-serif;
             font-size: 28px;
+        }
+
+        body {
+            display: block;
             width: 100%;
-            /* Dynamic width in pixels */
+            height: auto;
+            /* ✅ allow natural height */
+        }
+
+        @page {
+            margin: 0;
+            size: auto;
+            /* ✅ let page size expand automatically */
         }
 
         .logo {
             width: 70%;
-            max-width: 100%;
-            /* 70% of paper width */
             display: block;
-            margin: 0 auto;
-            /* Explicit centering */
+            margin: 1rem auto;
         }
 
         .receipt-container {
             width: 100%;
-            margin-top: 2rem;
+            margin-top: 1.5rem;
             font-size: inherit;
         }
 
         table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
+            border-collapse: collapse;
         }
 
         td {
             vertical-align: top;
-            padding: 1rem;
+            padding: 0.8rem;
         }
 
         .left {
@@ -88,7 +93,7 @@
         }
 
         .border-bottom {
-            border-bottom: 4px solid black;
+            border-bottom: 2px solid black;
         }
 
         tr.border-bottom td {
@@ -96,17 +101,17 @@
         }
 
         .padding-md {
-            padding: 1.5rem 1rem;
+            padding: 1.2rem 0.8rem;
         }
 
         .padding-sm {
-            padding: 1.25rem 0.75rem;
+            padding: 0.8rem 0.6rem;
         }
 
         .qr-code-box {
             width: 180px;
             height: 180px;
-            margin: 0 auto;
+            margin: 2rem auto 0;
             background: #000;
             display: flex;
             align-items: center;
@@ -116,22 +121,23 @@
         }
 
         .footer-message {
-            margin: 0.5rem 0;
+            margin: 0.4rem 0;
             font-weight: bold;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
         }
 
         .footer-container {
             text-align: center;
-            margin-top: 3rem;
-            padding: 2rem 0;
+            margin-top: 2rem;
+            padding: 1rem 0;
         }
 
         .gray {
             color: #666;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
         }
     </style>
+
 </head>
 
 <body>
