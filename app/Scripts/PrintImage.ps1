@@ -14,7 +14,7 @@ Add-Type -AssemblyName System.Windows.Forms
 
 $pd = New-Object System.Drawing.Printing.PrintDocument
 $pd.PrinterSettings.PrinterName = $Printer
-$pd.PrinterSettings.Copies = 4
+$pd.PrinterSettings.Copies = $Copies
 
 $pd.add_PrintPage({
     param($sender, $e)
