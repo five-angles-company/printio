@@ -67,7 +67,6 @@ class LabelPrinter extends BasePrinter
         $imageData = $snappy->getOutputFromHtml($html);
         $tmpFile   = tempnam(sys_get_temp_dir(), 'label_') . '.png';
         file_put_contents($tmpFile, $imageData);
-
         return $tmpFile;
     }
 }

@@ -27,7 +27,7 @@ class ReceiptPrinter extends BasePrinter
         $tmpFile = $this->renderReceipt($data, $settings);
 
         // 2. Dispatch print job
-        $this->dispatchPrintJob($tmpFile, $printerInfo->name);
+        $this->dispatchPrintJob($tmpFile, $printerInfo->name, 1);
     }
 
     /**
@@ -38,22 +38,18 @@ class ReceiptPrinter extends BasePrinter
         /** @var ReceiptSettings $settings */
         $settings = $printerSettings->settings;
         $dpi = $settings->dpi ?? 203;
-        $paperSizeMm = $settings->paperSize ?? 80; // default to 80mm width
-
+        $paperSizeMm = $settings->paperSize ?? 80;
         $paperWidthPx = (int)($paperSizeMm * $dpi / 25.4);
 
         // Render Blade template
-        $html = view('receipts.main', [
-            ...$data->toArray(),
-            'width' => $paperWidthPx,
-        ])->render();
+        $html = view('receipts.main', $data)->render();
 
         // Generate PNG via Snappy
         $snappy = app('snappy.image');
         $snappy->setOptions([
-            'format'  => 'jpg',
-            'quality' => 40,
-            'width'   => $paperWidthPx,
+            'format'  => 'png',
+            'quality' => 80,
+            'width' => $paperWidthPx,
         ]);
 
         $imageData = $snappy->getOutputFromHtml($html);
@@ -61,6 +57,7 @@ class ReceiptPrinter extends BasePrinter
         // Save temporary file
         $tmpFile = tempnam(sys_get_temp_dir(), 'receipt_') . '.png';
         file_put_contents($tmpFile, $imageData);
+
         return $tmpFile;
     }
 }

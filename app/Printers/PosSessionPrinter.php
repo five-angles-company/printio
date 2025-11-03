@@ -52,8 +52,8 @@ class PosSessionPrinter extends BasePrinter
         // Generate image via Snappy
         $snappy = app('snappy.image');
         $snappy->setOptions([
-            'format'  => 'jpg',
-            'quality' => 70,
+            'format'  => 'png',
+            'quality' => 80,
             'width'   => $paperWidthPx,
         ]);
 

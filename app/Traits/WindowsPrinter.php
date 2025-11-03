@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Log;
 
 trait WindowsPrinter
 {
-    protected function dispatchPrintJob(string $file, string $printerName, int $copies = 1, ?string $alias = null): void
+    protected function dispatchPrintJob(string $file, string $printerName, int $copies = 1,  bool $blocking = false): void
     {
         if (!file_exists($file)) {
             Log::error("Print file not found: {$file}");
@@ -15,7 +15,6 @@ trait WindowsPrinter
 
         $alias = $alias ?? 'print_' . uniqid();
 
-        // Path to your PowerShell script
         $psScriptPath = base_path('app/Scripts/PrintImage.ps1');
 
         if (!file_exists($psScriptPath)) {
@@ -23,27 +22,36 @@ trait WindowsPrinter
             return;
         }
 
-        // Properly escape paths for PowerShell
-        $escapedFile = escapeshellarg($file);
-        $escapedPrinter = escapeshellarg($printerName);
+        // Safer Windows quoting
+        $escapedFile = '"' . addslashes($file) . '"';
+        $escapedPrinter = '"' . addslashes($printerName) . '"';
 
-        // Run asynchronously (non-blocking)
+        // Proper argument passing
         $cmd = sprintf(
-            'start /B powershell -ExecutionPolicy Bypass -NoProfile -File "%s" -File %s -Printer %s -Copies %d',
+            'powershell -ExecutionPolicy Bypass -NoProfile -File "%s" -filePath %s -printerName %s -copies %d',
             $psScriptPath,
             $escapedFile,
             $escapedPrinter,
             $copies
         );
 
-        pclose(popen($cmd, 'r'));
+        if (!$blocking) {
+            // Run async (non-blocking)
+            $cmd = 'start /B ' . $cmd;
+            pclose(popen($cmd, 'r'));
+        } else {
+            // Run blocking
+            exec($cmd, $output, $exitCode);
+            Log::info("🖨️ Print job finished", compact('alias', 'printerName', 'exitCode', 'output'));
+        }
 
-        Log::debug("🖨️ Dispatched async PowerShell print", [
+        Log::error("🖨️ Dispatched PowerShell print", [
             'alias' => $alias,
             'printer' => $printerName,
             'copies' => $copies,
             'file' => $file,
             'script' => $psScriptPath,
+            'cmd' => $cmd,
         ]);
     }
 }

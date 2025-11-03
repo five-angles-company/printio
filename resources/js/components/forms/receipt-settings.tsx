@@ -13,8 +13,6 @@ function ReceiptSettings({ settings, printerId, handleOpen }: ReceiptSettingsPro
     const { put, data, setData, processing } = useForm({
         settings: {
             paperSize: (settings?.paperSize.toString() as string) || '',
-            cut: (settings?.cut as boolean) || false,
-            beep: (settings?.beep as boolean) || false,
         },
     });
 

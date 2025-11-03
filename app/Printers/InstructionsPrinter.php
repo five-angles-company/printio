@@ -38,15 +38,19 @@ class InstructionsPrinter extends BasePrinter
     {
         /** @var LabelSettings $settings */
         $settings = $printerSettings->settings;
-        $dpi = $settings->dpi ?? 203;
-        $paperSizeMm = $settings->paperSize ?? 80; // default 80mm width
 
-        $paperWidthPx = (int)($paperSizeMm * $dpi / 25.4);
+        $labelWidth = $settings->labelWidth;
+        $labelHeight = $settings->labelHeight;
+        $dpi = $settings->dpi;
+
+        $widthPx  = (int)($labelWidth * $dpi / 25.4);
+        $heightPx = (int)($labelHeight * $dpi / 25.4);
 
         // Render Blade template with data
         $html = view('labels.instructions', [
             'data' => $data,
-            'width' => $paperWidthPx,
+            'width' => $widthPx,
+            'height' => $heightPx,
         ])->render();
 
         // Generate PNG from HTML
@@ -54,7 +58,8 @@ class InstructionsPrinter extends BasePrinter
         $snappy->setOptions([
             'format'  => 'png',
             'quality' => 100,
-            'width'   => $paperWidthPx,
+            'width'                 => $widthPx,
+            'height'                => $heightPx,
         ]);
 
         $imageData = $snappy->getOutputFromHtml($html);

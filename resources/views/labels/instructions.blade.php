@@ -8,7 +8,7 @@
     <style>
         @page {
             margin: 0;
-            size: {{ $width }}px auto;
+            size: {{ $width }}px {{ $height }}px;
         }
 
         * {
@@ -22,37 +22,64 @@
             direction: rtl;
             text-align: right;
             width: {{ $width }}px;
-            font-size: 18px;
-            line-height: 1.4;
-            padding: 8px;
+            height: {{ $height }}px;
+            margin: 0;
+            padding: 0;
         }
 
         .label-container {
-            width: 100%;
+            width: {{ $width }}px;
+            height: {{ $height }}px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 8px;
         }
 
-        .product-name {
+        /* Header section */
+        .header {
             text-align: center;
-            font-size: 50px;
-            font-weight: bold;
-            decoration: underline;
+            margin-bottom: 6px;
         }
 
-        .info-table {
+        .pharmacist-name {
+            font-size: 20px;
+            font-weight: bold;
+            line-height: 1.3;
+        }
+
+        .patient-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        /* Product section */
+        .product-name {
+            font-size: 26px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: underline;
+            margin: 8px 0;
+        }
+
+        /* Instructions grid */
+        .instructions-table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
+            text-align: center;
         }
 
-
-
-        .usage-line {
-            font-size: 40px;
-            margin-top: 2px;
+        .instructions-table td {
+            font-size: 18px;
             font-weight: bold;
+            padding: 4px;
+            vertical-align: middle;
+            width: 50%;
         }
 
-
-
+        /* Print handling */
         @media print {
             body {
                 -webkit-print-color-adjust: exact;
@@ -64,14 +91,33 @@
 
 <body>
     <div class="label-container">
+        <div class="header">
+            <div class="pharmacist-name">{{ $data->pharmacistName }}</div>
+            <div class="patient-name">المريض: {{ $data->patientName }}</div>
+        </div>
+
         <div class="product-name">{{ $data->productName }}</div>
 
-        @foreach ([$data->line1, $data->line2, $data->line3, $data->line4] as $line)
-            @if (!empty($line))
-                <div class="usage-line">- {{ $line }}</div>
-            @endif
-        @endforeach
+        @php
+            $lines = array_values(
+                array_filter([$data->line1 ?? null, $data->line2 ?? null, $data->line3 ?? null, $data->line4 ?? null]),
+            );
+        @endphp
 
+        @if (count($lines) > 0)
+            <table class="instructions-table">
+                <tr>
+                    <td>{{ $lines[0] ?? '' }}</td>
+                    <td>{{ $lines[1] ?? '' }}</td>
+                </tr>
+                @if (count($lines) > 2)
+                    <tr>
+                        <td>{{ $lines[2] ?? '' }}</td>
+                        <td>{{ $lines[3] ?? '' }}</td>
+                    </tr>
+                @endif
+            </table>
+        @endif
     </div>
 </body>
 

@@ -74,7 +74,7 @@
         }
 
         .footer-table td {
-            padding: 0;
+            padding: 0 10px;
             vertical-align: middle;
         }
 
@@ -88,7 +88,6 @@
             font-size: 18px;
             font-weight: bold;
             text-align: right;
-            padding-right: 500px;
         }
 
         @media print {
