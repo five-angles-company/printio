@@ -45,6 +45,9 @@
             font-size: 18px;
             font-weight: bold;
             line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .barcode-section {
