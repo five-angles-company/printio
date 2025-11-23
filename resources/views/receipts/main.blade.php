@@ -172,6 +172,11 @@
                     <td class="center">{{ $phone }}</td>
                     <td class="right">رقم الهاتف</td>
                 </tr>
+                <tr class="header-row">
+                    <td class="left">Client Name</td>
+                    <td class="center">{{ $client_name }}</td>
+                    <td class="right">اسم العميل</td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -188,17 +193,17 @@
             </thead>
             <tbody>
                 @foreach ($items as $item)
-                    <tr class="border-bottom">
-                        <td class="left padding-sm">
-                            {{ $item['name'] }}<br>
-                            @if (isset($item['arabic_name']))
-                                <span class="arabic-small">{{ $item['arabic_name'] }}</span>
-                            @endif
-                        </td>
-                        <td class="center padding-sm">{{ $item['quantity'] }}</td>
-                        <td class="center padding-sm">{{ number_format($item['unitPrice'], 2) }}</td>
-                        <td class="center padding-sm">{{ number_format($item['totalPrice'], 2) }}</td>
-                    </tr>
+                <tr class="border-bottom">
+                    <td class="left padding-sm">
+                        {{ $item['name'] }}<br>
+                        @if (isset($item['arabic_name']))
+                        <span class="arabic-small">{{ $item['arabic_name'] }}</span>
+                        @endif
+                    </td>
+                    <td class="center padding-sm">{{ $item['quantity'] }}</td>
+                    <td class="center padding-sm">{{ number_format($item['unitPrice'], 2) }}</td>
+                    <td class="center padding-sm">{{ number_format($item['totalPrice'], 2) }}</td>
+                </tr>
                 @endforeach
                 <tr class="border-top">
                     <td class="left padding-md bold">
@@ -240,37 +245,37 @@
                 </tr>
 
                 @if ($type === 'return')
-                    <tr class="border-bottom">
-                        <td class="left padding-sm">
-                            Cash<br>
-                            <span class="arabic-small">النقد</span>
-                        </td>
-                        <td class="right padding-sm bold">{{ number_format($returnCash, 2) }} SAR</td>
-                    </tr>
+                <tr class="border-bottom">
+                    <td class="left padding-sm">
+                        Cash<br>
+                        <span class="arabic-small">النقد</span>
+                    </td>
+                    <td class="right padding-sm bold">{{ number_format($returnCash, 2) }} SAR</td>
+                </tr>
 
-                    <tr class="border-bottom">
-                        <td class="left padding-sm">
-                            Refund<br>
-                            <span class="arabic-small">المرتجع</span>
-                        </td>
-                        <td class="right padding-sm bold">{{ number_format($totalRefund, 2) }} SAR</td>
-                    </tr>
+                <tr class="border-bottom">
+                    <td class="left padding-sm">
+                        Refund<br>
+                        <span class="arabic-small">المرتجع</span>
+                    </td>
+                    <td class="right padding-sm bold">{{ number_format($totalRefund, 2) }} SAR</td>
+                </tr>
                 @endif
             </tbody>
         </table>
     </div>
 
     @php
-        use Endroid\QrCode\Builder\Builder;
+    use Endroid\QrCode\Builder\Builder;
 
-        $qr = Builder::create()->data($clientId)->size(180)->margin(0)->build();
-        $qrBase64 = base64_encode($qr->getString());
+    $qr = Builder::create()->data($userId)->size(180)->margin(0)->build();
+    $qrBase64 = base64_encode($qr->getString());
     @endphp
     <div class="footer-container">
         <div class="qr-code-box">
             <img src="data:image/png;base64,{{ $qrBase64 }}" alt="QR Code">
         </div>
-        <p class="gray">User ID: <strong>{{ $clientId ?? 'N/A' }}</strong></p>
+        <p class="gray">User ID: <strong>{{ $userId ?? 'N/A' }}</strong></p>
         <div>
             <p class="footer-message">We Wish You a Quick Recovery</p>
             <p class="footer-message rtl">نتمنى لكم الشفاء العاجل</p>

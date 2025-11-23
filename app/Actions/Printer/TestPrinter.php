@@ -137,7 +137,8 @@ final class TestPrinter
                 'total' => 109.99,
                 'address' => 'Test Address, Test City',
                 'phone' => '555-0123',
-                'clientId' => 'TEST001',
+                'client_name' => 'Test Client',
+                'userId' => 'TEST001',
                 'type' => 'sale',
                 'returnCash' => null,
                 'totalRefund' => null
