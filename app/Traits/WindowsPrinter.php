@@ -6,14 +6,19 @@ use Illuminate\Support\Facades\Log;
 
 trait WindowsPrinter
 {
-    protected function dispatchPrintJob(string $file, string $printerName, int $copies = 1,  bool $blocking = false): void
-    {
+    protected function dispatchPrintJob(
+        string $file,
+        string $printerName,
+        int $copies = 1,
+        bool $blocking = false,
+        int $maxHeightMm = 800
+    ): void {
         if (!file_exists($file)) {
             Log::error("Print file not found: {$file}");
             return;
         }
 
-        $alias = $alias ?? 'print_' . uniqid();
+        $alias = 'print_' . uniqid();
 
         $psScriptPath = base_path('app/Scripts/PrintImage.ps1');
 
@@ -26,13 +31,14 @@ trait WindowsPrinter
         $escapedFile = '"' . addslashes($file) . '"';
         $escapedPrinter = '"' . addslashes($printerName) . '"';
 
-        // Proper argument passing
+        // Proper argument passing with maxHeightMm for pagination
         $cmd = sprintf(
-            'powershell -ExecutionPolicy Bypass -NoProfile -File "%s" -filePath %s -printerName %s -copies %d',
+            'powershell -ExecutionPolicy Bypass -NoProfile -File "%s" -filePath %s -printerName %s -copies %d -maxHeightMm %d',
             $psScriptPath,
             $escapedFile,
             $escapedPrinter,
-            $copies
+            $copies,
+            $maxHeightMm
         );
 
         if (!$blocking) {
@@ -42,13 +48,14 @@ trait WindowsPrinter
         } else {
             // Run blocking
             exec($cmd, $output, $exitCode);
-            Log::info("🖨️ Print job finished", compact('alias', 'printerName', 'exitCode', 'output'));
+            Log::info("Print job finished", compact('alias', 'printerName', 'exitCode', 'output'));
         }
 
-        Log::error("🖨️ Dispatched PowerShell print", [
+        Log::info("Dispatched PowerShell print", [
             'alias' => $alias,
             'printer' => $printerName,
             'copies' => $copies,
+            'maxHeightMm' => $maxHeightMm,
             'file' => $file,
             'script' => $psScriptPath,
             'cmd' => $cmd,

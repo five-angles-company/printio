@@ -23,11 +23,20 @@ class ReceiptPrinter extends BasePrinter
         $printerInfo = $printJob->printer;
         $settings = $printerInfo->printerSettings;
 
+        /** @var ReceiptSettings $receiptSettings */
+        $receiptSettings = $settings->settings;
+
         // 1. Render receipt image
         $tmpFile = $this->renderReceipt($data, $settings);
 
-        // 2. Dispatch print job
-        $this->dispatchPrintJob($tmpFile, $printerInfo->name, 1);
+        // 2. Dispatch print job with maxPaperHeight for pagination support
+        $this->dispatchPrintJob(
+            $tmpFile,
+            $printerInfo->name,
+            copies: 1,
+            blocking: false,
+            maxHeightMm: $receiptSettings->maxPaperHeight ?? 800
+        );
     }
 
     /**

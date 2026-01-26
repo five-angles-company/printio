@@ -23,13 +23,20 @@ class PosSessionPrinter extends BasePrinter
         $printerInfo = $printJob->printer;
         $settings = $printerInfo->printerSettings;
 
+        /** @var PosSessionSettings $sessionSettings */
+        $sessionSettings = $settings->settings;
+
         // 1. Render receipt as image
         $tmpFile = $this->renderReceipt($data, $settings);
 
-        // 2. Dispatch print job (non-blocking)
-        $this->dispatchPrintJob($tmpFile, $printerInfo->name);
-
-        // 3. Optionally let OS clean up temp files
+        // 2. Dispatch print job with maxPaperHeight for pagination support
+        $this->dispatchPrintJob(
+            $tmpFile,
+            $printerInfo->name,
+            copies: 1,
+            blocking: false,
+            maxHeightMm: $sessionSettings->maxPaperHeight ?? 800
+        );
     }
 
     /**

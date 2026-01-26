@@ -12,7 +12,8 @@ interface ReceiptSettingsProps {
 function ReceiptSettings({ settings, printerId, handleOpen }: ReceiptSettingsProps) {
     const { put, data, setData, processing } = useForm({
         settings: {
-            paperSize: (settings?.paperSize.toString() as string) || '',
+            paperSize: (settings?.paperSize?.toString() as string) || '80',
+            maxPaperHeight: (settings?.maxPaperHeight?.toString() as string) || '800',
         },
     });
 
@@ -47,6 +48,29 @@ function ReceiptSettings({ settings, printerId, handleOpen }: ReceiptSettingsPro
                                 <SelectItem value="80">80mm</SelectItem>
                             </SelectContent>
                         </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label>Max paper height:</label>
+                        <Select
+                            value={data.settings.maxPaperHeight}
+                            onValueChange={(value) => setData('settings', { ...data.settings, maxPaperHeight: value })}
+                        >
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select max height" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="300">300mm (budget printers)</SelectItem>
+                                <SelectItem value="500">500mm</SelectItem>
+                                <SelectItem value="800">800mm (default)</SelectItem>
+                                <SelectItem value="1000">1000mm</SelectItem>
+                                <SelectItem value="2000">2000mm</SelectItem>
+                                <SelectItem value="3000">3000mm (high-end printers)</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                            Long invoices will be split into pages if they exceed this height. Lower this if receipts get cut off.
+                        </p>
                     </div>
                 </div>
 

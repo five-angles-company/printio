@@ -177,6 +177,13 @@
                     <td class="center">{{ $client_name }}</td>
                     <td class="right">اسم العميل</td>
                 </tr>
+                @if (!empty($client_tax_number))
+                <tr>
+                    <td class="left">Client Tax No.</td>
+                    <td class="center">{{ $client_tax_number }}</td>
+                    <td class="right">الرقم الضريبي للعميل</td>
+                </tr>
+                @endif
             </tbody>
         </table>
     </div>
