@@ -173,6 +173,10 @@
                     <td class="value">{{ number_format($totalCash, 2) }}</td>
                 </tr>
                 <tr>
+                    <td class="label">Net Cash :</td>
+                    <td class="value">{{ number_format($netCash, 2) }}</td>
+                </tr>
+                <tr>
                     <td class="label">Mada :</td>
                     <td class="value">{{ number_format($totalMada, 2) }}</td>
                 </tr>

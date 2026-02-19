@@ -35,6 +35,7 @@ class PosSessionData extends Data
         public string $createdAt,
         public string $updatedAt,
         public string $closedAt,
-        public string $totalTime
+        public string $totalTime,
+        public float $netCash = 0
     ) {}
 }
