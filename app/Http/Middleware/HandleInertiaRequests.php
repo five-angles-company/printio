@@ -49,15 +49,15 @@ class HandleInertiaRequests extends Middleware
                 'user' => Settings::get('auth.user'),
                 'token' => Settings::get('auth.token'),
             ],
-            'ziggy' => fn(): array => [
+            'ziggy' => fn (): array => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
-            'flash' => fn() => [
+            'flash' => fn () => [
                 'error' => $request->session()->get(('error')),
                 'success' => $request->session()->get(('success')),
             ],
-            'autostart' => App::openAtLogin(),
+            'autoStart' => App::openAtLogin(),
         ];
     }
 }

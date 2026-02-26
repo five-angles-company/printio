@@ -233,6 +233,10 @@
                     <td class="value">{{ $totalReturnInvoices }}</td>
                 </tr>
                 <tr>
+                    <td class="label">Total Session :</td>
+                    <td class="value">{{ $totalSession }}</td>
+                </tr>
+                <tr>
                     <td class="label">Total Sales :</td>
                     <td class="value">{{ number_format($totalSales, 2) }}</td>
                 </tr>

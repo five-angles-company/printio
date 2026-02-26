@@ -16,14 +16,14 @@ final class TestPrinter
         $printer->printJobs()->create([
             'name' => 'Test Print Job',
             'data' => $this->getTestData($printer->type),
-            'type' => $printer->type
+            'type' => $printer->type,
         ]);
     }
 
     public function getTestData(PrinterType $type): ReceiptData|LabelData|InstructionsData|PosSessionData
     {
         return match ($type) {
-            PrinterType::RECEIPT =>  ReceiptData::from([
+            PrinterType::RECEIPT => ReceiptData::from([
                 'branchName' => 'Test Branch',
                 'invoiceNumber' => 'INV-2026-001',
                 'date' => date('Y-m-d H:i:s'),
@@ -95,9 +95,9 @@ final class TestPrinter
                 'userId' => 'USR-2026-001',
                 'type' => 'sale',
                 'returnCash' => null,
-                'totalRefund' => null
+                'totalRefund' => null,
             ]),
-            PrinterType::LABEL =>  LabelData::from([
+            PrinterType::LABEL => LabelData::from([
                 'productName' => 'Test Product',
                 'barcode' => '1234567890123',
                 'price' => 99.99,
@@ -106,13 +106,13 @@ final class TestPrinter
             ]),
 
             PrinterType::INSTRUCTIONS => new InstructionsData(
-                "فلان الفلاني",
-                "فلان الفلاني",
-                "Panadol Extra 12345",
-                "حبة كل 8 ساعات",
-                "بعد الأكل",
-                "عن طريق الفم :)",
-                "ألف سلامة",
+                'فلان الفلاني',
+                'فلان الفلاني',
+                'Panadol Extra 12345',
+                'حبة كل 8 ساعات',
+                'بعد الأكل',
+                'عن طريق الفم :)',
+                'ألف سلامة',
                 1
             ),
 
@@ -141,6 +141,7 @@ final class TestPrinter
                 createdBy: 'YAHIA',
                 totalSaleInvoices: 0,
                 totalReturnInvoices: 0,
+                totalSession: 1,
                 createdAt: '2024-12-17 22:24:06',
                 updatedAt: '2024-12-17 22:41:05',
                 closedAt: '2024-12-17 22:41:05',

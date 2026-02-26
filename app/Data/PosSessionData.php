@@ -32,6 +32,7 @@ class PosSessionData extends Data
         public string $createdBy,
         public int $totalSaleInvoices,
         public int $totalReturnInvoices,
+        public int $totalSession,
         public string $createdAt,
         public string $updatedAt,
         public string $closedAt,
