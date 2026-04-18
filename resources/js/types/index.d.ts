@@ -21,7 +21,6 @@ export type SharedData = {
     quote: { message: string; author: string };
     auth: Auth;
     ziggy: Config & { location: string };
-    autoStart: boolean;
 } & Record<string, unknown>;
 
 // --------------------

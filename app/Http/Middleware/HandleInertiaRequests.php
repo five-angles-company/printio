@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
-use Native\Laravel\Facades\App;
 use Native\Laravel\Facades\Settings;
 use Tighten\Ziggy\Ziggy;
 
@@ -57,7 +56,6 @@ class HandleInertiaRequests extends Middleware
                 'error' => $request->session()->get(('error')),
                 'success' => $request->session()->get(('success')),
             ],
-            'autoStart' => App::openAtLogin(),
         ];
     }
 }

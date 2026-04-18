@@ -23,7 +23,6 @@ class UpdateSettingsRequest extends FormRequest
     {
         return [
             'api_url' => ['nullable', 'url'],
-            'auto_start' => ['nullable', 'boolean'],
         ];
     }
 }
