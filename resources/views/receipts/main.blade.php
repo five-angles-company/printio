@@ -275,7 +275,8 @@
     @php
     use Endroid\QrCode\Builder\Builder;
 
-    $qr = Builder::create()->data($userId)->size(180)->margin(0)->build();
+    $vatNumber = '310432040400003';
+    $qr = Builder::create()->data($vatNumber)->size(180)->margin(0)->build();
     $qrBase64 = base64_encode($qr->getString());
     @endphp
     <div class="footer-container">
