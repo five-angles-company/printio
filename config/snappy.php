@@ -43,7 +43,10 @@ return [
 
     'image' => [
         'enabled' => true,
-        'binary'  => env('WKHTML_IMG_BINARY', base_path('/bin/wkhtmltoimage.exe')),
+        // Quoted: Snappy passes the binary through the shell unquoted, so an
+        // install path containing spaces (e.g. C:\Users\Almoharib Pharmacy\...)
+        // breaks with "is not recognized as an internal or external command".
+        'binary'  => '"' . trim(env('WKHTML_IMG_BINARY', base_path('bin/wkhtmltoimage.exe')), '"') . '"',
         'timeout' => false,
         'options' => [],
         'env'     => [],

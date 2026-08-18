@@ -27,9 +27,10 @@ trait WindowsPrinter
             return;
         }
 
-        // Safer Windows quoting
-        $escapedFile = '"' . addslashes($file) . '"';
-        $escapedPrinter = '"' . addslashes($printerName) . '"';
+        // Windows quoting: only wrap in double quotes. addslashes() would double
+        // every backslash, which mangles UNC printer names like \\SERVER\HP.
+        $escapedFile = '"' . $file . '"';
+        $escapedPrinter = '"' . $printerName . '"';
 
         // Proper argument passing with maxHeightMm for pagination
         $cmd = sprintf(
