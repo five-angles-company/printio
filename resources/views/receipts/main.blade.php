@@ -141,7 +141,7 @@
 </head>
 
 <body>
-    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images\pharmacy.png'))) }}"
+    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/pharmacy.png'))) }}"
         alt="Logo" class="logo">
 
     <div class="receipt-container">
@@ -188,6 +188,14 @@
         </table>
     </div>
 
+    @php
+        // Receipt paper is narrow, so the discount column earns its place only
+        // when something was actually forgiven — a promotion giveaway, priced in
+        // full and cancelled, or a discounted line. An ordinary sale prints
+        // exactly as it always did.
+        $showsDiscount = collect($items)->contains(fn ($line) => (float) ($line['discount'] ?? 0) > 0);
+    @endphp
+
     <div class="receipt-container">
         <table style="margin-top: 2rem">
             <thead>
@@ -195,6 +203,9 @@
                     <td class="left padding-md bold">Product<br><span class="rtl">الصنف</span></td>
                     <td class="center padding-md bold">Quantity<br><span class="rtl">الكمية</span></td>
                     <td class="center padding-md bold">Price<br><span class="rtl">السعر</span></td>
+                    @if ($showsDiscount)
+                    <td class="center padding-md bold">Discount<br><span class="rtl">الخصم</span></td>
+                    @endif
                     <td class="center padding-md bold">Total<br><span class="rtl">الإجمالي</span></td>
                 </tr>
             </thead>
@@ -209,6 +220,9 @@
                     </td>
                     <td class="center padding-sm">{{ $item['quantity'] }}</td>
                     <td class="center padding-sm">{{ number_format($item['unitPrice'], 2) }}</td>
+                    @if ($showsDiscount)
+                    <td class="center padding-sm">{{ number_format($item['discount'] ?? 0, 2) }}</td>
+                    @endif
                     <td class="center padding-sm">{{ number_format($item['totalPrice'], 2) }}</td>
                 </tr>
                 @endforeach
@@ -220,7 +234,14 @@
                         {{ array_sum(array_column($items, 'quantity')) }}
                     </td>
                     <td class="center padding-md"></td>
-                    <td class="center padding-md"></td>
+                    @if ($showsDiscount)
+                    <td class="center padding-md bold">
+                        {{ number_format(array_sum(array_column($items, 'discount')), 2) }}
+                    </td>
+                    @endif
+                    <td class="center padding-md bold">
+                        {{ number_format(array_sum(array_column($items, 'totalPrice')), 2) }}
+                    </td>
                 </tr>
             </tbody>
         </table>
