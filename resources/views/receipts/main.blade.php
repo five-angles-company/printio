@@ -141,7 +141,12 @@
 </head>
 
 <body>
-    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/pharmacy.png'))) }}"
+    @php
+        // Sales orders are issued under the second brand, so they carry its logo.
+        $logoFile = $type === 'sales_order' ? 'images/pharmacy2.png' : 'images/pharmacy.png';
+    @endphp
+
+    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path($logoFile))) }}"
         alt="Logo" class="logo">
 
     <div class="receipt-container">
