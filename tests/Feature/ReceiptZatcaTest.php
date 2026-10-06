@@ -31,9 +31,9 @@ function receiptJson(array $extra = []): array
     ];
 }
 
-function qrImage(string $text): string
+function qrImage(string $text, int $size = 180): string
 {
-    return base64_encode(Builder::create()->data($text)->size(180)->margin(0)->build()->getString());
+    return base64_encode(Builder::create()->data($text)->size($size)->margin(0)->build()->getString());
 }
 
 it('prints the seller, VAT number and ZATCA QR code the server sends', function () {
@@ -49,7 +49,9 @@ it('prints the seller, VAT number and ZATCA QR code the server sends', function 
         ->toContain('مؤسسة الاجداد للتجارة')
         ->toContain('399999999900003')
         ->not->toContain('310432040400003')
-        ->toContain(qrImage($zatcaQr));
+        // Twice the size, so the nine tags of a signed invoice still scan.
+        ->toContain(qrImage($zatcaQr, 360))
+        ->toContain('qr-code-box zatca');
 });
 
 it('keeps printing the VAT number it always did when the server sends none', function () {

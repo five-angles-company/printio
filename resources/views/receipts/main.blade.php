@@ -120,6 +120,14 @@
             font-size: 1.4rem;
         }
 
+        /* A signed e-invoice's QR code carries nine tags, some 550 characters:
+           at 360 dots each of its squares is about four printer dots wide,
+           half a millimetre on an 80 mm roll, which a phone reads. */
+        .qr-code-box.zatca {
+            width: 360px;
+            height: 360px;
+        }
+
         .footer-message {
             margin: 0.4rem 0;
             font-weight: bold;
@@ -313,11 +321,11 @@
 
     // ZATCA's QR when the server sends one; otherwise the VAT number, as before.
     $qrText = $zatcaQr ?? $sellerVatNumber ?? '310432040400003';
-    $qr = Builder::create()->data($qrText)->size(180)->margin(0)->build();
+    $qr = Builder::create()->data($qrText)->size($zatcaQr ? 360 : 180)->margin(0)->build();
     $qrBase64 = base64_encode($qr->getString());
     @endphp
     <div class="footer-container">
-        <div class="qr-code-box">
+        <div class="qr-code-box{{ $zatcaQr ? ' zatca' : '' }}">
             <img src="data:image/png;base64,{{ $qrBase64 }}" alt="QR Code">
         </div>
         <p class="gray">User ID: <strong>{{ $userId ?? 'N/A' }}</strong></p>
