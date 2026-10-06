@@ -155,11 +155,21 @@
                 <tr>
                     <td class="left">Branch</td>
                     <td class="center">{{ $branchName }}</td>
-                    <td class="right">فرع المجمعة</td>
+                    <td class="right">الفرع</td>
                 </tr>
+                {{-- The seller and VAT number come from the taxpayer the branch invoices
+                     under. A server that predates them sends neither, so the VAT number
+                     falls back to the one this receipt always printed. --}}
+                @if (! empty($sellerName))
+                <tr>
+                    <td class="left">Seller</td>
+                    <td class="center">{{ $sellerName }}</td>
+                    <td class="right">البائع</td>
+                </tr>
+                @endif
                 <tr>
                     <td class="left">VAT Reg. No.</td>
-                    <td class="center">310432040400003</td>
+                    <td class="center">{{ $sellerVatNumber ?? '310432040400003' }}</td>
                     <td class="right">الرقم الضريبي</td>
                 </tr>
                 <tr>
@@ -301,8 +311,9 @@
     @php
     use Endroid\QrCode\Builder\Builder;
 
-    $vatNumber = '310432040400003';
-    $qr = Builder::create()->data($vatNumber)->size(180)->margin(0)->build();
+    // ZATCA's QR when the server sends one; otherwise the VAT number, as before.
+    $qrText = $zatcaQr ?? $sellerVatNumber ?? '310432040400003';
+    $qr = Builder::create()->data($qrText)->size(180)->margin(0)->build();
     $qrBase64 = base64_encode($qr->getString());
     @endphp
     <div class="footer-container">

@@ -23,5 +23,10 @@ class ReceiptData extends Data
         public string $type = 'sale',
         public ?float $returnCash = null,
         public ?float $totalRefund = null,
+        /** The taxpayer the branch invoices under; a server that predates it sends neither. */
+        public ?string $sellerName = null,
+        public ?string $sellerVatNumber = null,
+        /** The Base64 TLV text of the receipt's ZATCA QR code; none on a sales order. */
+        public ?string $zatcaQr = null,
     ) {}
 }
