@@ -62,3 +62,32 @@ it('keeps printing the VAT number it always did when the server sends none', fun
         ->toContain(qrImage('310432040400003'))
         ->not->toContain('Seller');
 });
+
+it('titles the document and names a B2B buyer\'s address, as the server sends them', function () {
+    $html = View::make('receipts.main', ReceiptData::from(receiptJson([
+        'titleEn' => 'Tax Invoice',
+        'titleAr' => 'فاتورة ضريبية',
+        'client_name' => 'مستشفى المجمعة',
+        'client_tax_number' => '300000000000003',
+        'clientAddress' => '1111 طريق الملك فهد، حي الفيصلية، المجمعة 15341',
+    ])))->render();
+
+    expect($html)
+        ->toContain('Tax Invoice')
+        ->toContain('فاتورة ضريبية')
+        ->toContain('1111 طريق الملك فهد، حي الفيصلية، المجمعة 15341');
+});
+
+it('prints no QR code on a B2B invoice ZATCA has yet to clear, and says it follows', function () {
+    $html = View::make('receipts.main', ReceiptData::from(receiptJson(['awaitingClearance' => true])))->render();
+
+    expect($html)
+        ->toContain('follows once ZATCA has cleared it')
+        ->not->toContain('class="qr-code-box');
+});
+
+it('prints as before for a server that sends no title', function () {
+    $html = View::make('receipts.main', ReceiptData::from(receiptJson()))->render();
+
+    expect($html)->not->toContain('class="document-title"')->toContain('class="qr-code-box');
+});

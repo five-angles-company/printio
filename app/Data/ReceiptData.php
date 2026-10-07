@@ -28,5 +28,12 @@ class ReceiptData extends Data
         public ?string $sellerVatNumber = null,
         /** The Base64 TLV text of the receipt's ZATCA QR code; none on a sales order. */
         public ?string $zatcaQr = null,
+        /** What the document is, as ZATCA asks it be titled; a server that predates it sends none. */
+        public ?string $titleEn = null,
+        public ?string $titleAr = null,
+        /** The buyer's national address, which a B2B tax invoice names. */
+        public ?string $clientAddress = null,
+        /** A B2B invoice ZATCA has yet to clear: it prints no QR code until it has. */
+        public bool $awaitingClearance = false,
     ) {}
 }

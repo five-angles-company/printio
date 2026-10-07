@@ -36,6 +36,21 @@
             margin: 1rem auto;
         }
 
+        .document-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 32px;
+            border: 2px solid black;
+            padding: 0.6rem;
+            margin: 0.5rem 0;
+        }
+
+        .clearance-note {
+            text-align: center;
+            font-size: 24px;
+            margin: 2rem 0 0;
+        }
+
         .receipt-container {
             width: 100%;
             margin-top: 1.5rem;
@@ -157,6 +172,14 @@
     <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path($logoFile))) }}"
         alt="Logo" class="logo">
 
+    {{-- What the document is, as ZATCA asks every invoice and credit note be titled. --}}
+    @if (! empty($titleEn))
+        <div class="document-title">
+            {{ $titleEn }}<br>
+            <span class="rtl">{{ $titleAr }}</span>
+        </div>
+    @endif
+
     <div class="receipt-container">
         <table>
             <tbody>
@@ -205,6 +228,13 @@
                     <td class="left">Client Tax No.</td>
                     <td class="center">{{ $client_tax_number }}</td>
                     <td class="right">الرقم الضريبي للعميل</td>
+                </tr>
+                @endif
+                @if (! empty($clientAddress))
+                <tr>
+                    <td class="left">Client Address</td>
+                    <td class="center">{{ $clientAddress }}</td>
+                    <td class="right">عنوان العميل</td>
                 </tr>
                 @endif
             </tbody>
@@ -325,9 +355,18 @@
     $qrBase64 = base64_encode($qr->getString());
     @endphp
     <div class="footer-container">
-        <div class="qr-code-box{{ $zatcaQr ? ' zatca' : '' }}">
-            <img src="data:image/png;base64,{{ $qrBase64 }}" alt="QR Code">
-        </div>
+        {{-- A B2B invoice carries the QR code ZATCA stamps it with once cleared,
+             which the customer gets then; this copy carries none. --}}
+        @if ($awaitingClearance)
+            <p class="clearance-note">
+                The tax invoice, with ZATCA's QR code, follows once ZATCA has cleared it.<br>
+                <span class="rtl">تُرسل الفاتورة الضريبية برمز الهيئة بعد اعتمادها من الهيئة.</span>
+            </p>
+        @else
+            <div class="qr-code-box{{ $zatcaQr ? ' zatca' : '' }}">
+                <img src="data:image/png;base64,{{ $qrBase64 }}" alt="QR Code">
+            </div>
+        @endif
         <p class="gray">User ID: <strong>{{ $userId ?? 'N/A' }}</strong></p>
         <div>
             <p class="footer-message">We Wish You a Quick Recovery</p>
