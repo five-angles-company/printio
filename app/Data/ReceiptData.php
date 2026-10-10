@@ -35,5 +35,10 @@ class ReceiptData extends Data
         public ?string $clientAddress = null,
         /** A B2B invoice ZATCA has yet to clear: it prints no QR code until it has. */
         public bool $awaitingClearance = false,
+        /** A sale on credit, which prints what has been paid on it, what is still owed and when it falls due; a server that predates it sends none. */
+        public bool $creditSale = false,
+        public ?float $paidAmount = null,
+        public ?float $remainingAmount = null,
+        public ?string $dueDate = null,
     ) {}
 }

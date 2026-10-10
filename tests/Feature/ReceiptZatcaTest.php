@@ -91,3 +91,45 @@ it('prints as before for a server that sends no title', function () {
 
     expect($html)->not->toContain('class="document-title"')->toContain('class="qr-code-box');
 });
+
+it('prints a credit sale\'s payment method, paid and remaining amounts and due date beside the buyer\'s tax details and QR code', function () {
+    $zatcaQr = 'AQxCb2JzIFJlY29yZHMCDzMxMDEyMjM5MzUwMDAwMwMUMjAyMi0wNC0yNVQxNTozMDowMFoEBzEwMDAuMDAFBjE1MC4wMA==';
+
+    $html = View::make('receipts.main', ReceiptData::from(receiptJson([
+        'titleEn' => 'Tax Invoice',
+        'titleAr' => 'فاتورة ضريبية',
+        'client_name' => 'مستشفى المجمعة',
+        'client_tax_number' => '300000000000003',
+        'clientAddress' => '1111 طريق الملك فهد، حي الفيصلية، المجمعة 15341',
+        'zatcaQr' => $zatcaQr,
+        'creditSale' => true,
+        'paidAmount' => 40.0,
+        'remainingAmount' => 75.0,
+        'dueDate' => '2026-11-05',
+    ])))->render();
+
+    expect($html)
+        ->toContain('Payment Method')
+        ->toContain('طريقة الدفع')
+        ->toContain('Credit Sale')
+        ->toContain('بيع آجل')
+        ->toContain('المبلغ المدفوع')
+        ->toContain('40.00 SAR')
+        ->toContain('المبلغ المتبقي')
+        ->toContain('75.00 SAR')
+        ->toContain('تاريخ الاستحقاق')
+        ->toContain('2026-11-05')
+        ->toContain('مستشفى المجمعة')
+        ->toContain('300000000000003')
+        ->toContain('1111 طريق الملك فهد، حي الفيصلية، المجمعة 15341')
+        ->toContain(qrImage($zatcaQr, 360));
+});
+
+it('names no payment method or due date on a cash sale, or for a server that sends none', function () {
+    $html = View::make('receipts.main', ReceiptData::from(receiptJson()))->render();
+
+    expect($html)
+        ->not->toContain('Payment Method')
+        ->not->toContain('Remaining Amount')
+        ->not->toContain('تاريخ الاستحقاق');
+});

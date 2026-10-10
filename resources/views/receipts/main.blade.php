@@ -213,6 +213,13 @@
                     <td class="center">{{ $date }}</td>
                     <td class="right">التاريخ / الوقت</td>
                 </tr>
+                @if ($creditSale)
+                <tr>
+                    <td class="left">Payment Method</td>
+                    <td class="center">Credit Sale<br><span class="rtl">بيع آجل</span></td>
+                    <td class="right">طريقة الدفع</td>
+                </tr>
+                @endif
                 <tr>
                     <td class="left">Telephone No.</td>
                     <td class="center">{{ $phone }}</td>
@@ -324,6 +331,32 @@
                     </td>
                     <td class="right padding-sm bold">{{ number_format($total, 2) }} SAR</td>
                 </tr>
+
+                {{-- A credit sale is a debt on the customer's account: what has been
+                     paid on it, what is still owed and the day it falls due. --}}
+                @if ($creditSale)
+                <tr>
+                    <td class="left padding-sm">
+                        Paid Amount<br>
+                        <span class="arabic-small">المبلغ المدفوع</span>
+                    </td>
+                    <td class="right padding-sm bold">{{ number_format($paidAmount ?? 0, 2) }} SAR</td>
+                </tr>
+                <tr>
+                    <td class="left padding-sm bold">
+                        Remaining Amount<br>
+                        <span class="arabic-small">المبلغ المتبقي</span>
+                    </td>
+                    <td class="right padding-sm bold">{{ number_format($remainingAmount ?? 0, 2) }} SAR</td>
+                </tr>
+                <tr class="border-bottom">
+                    <td class="left padding-sm bold">
+                        Due Date<br>
+                        <span class="arabic-small">تاريخ الاستحقاق</span>
+                    </td>
+                    <td class="right padding-sm bold">{{ $dueDate }}</td>
+                </tr>
+                @endif
 
                 @if ($type === 'return')
                 <tr class="border-bottom">
